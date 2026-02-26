@@ -160,6 +160,51 @@
   transform: none;
 }
 
+.groupToggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.toggleTrack {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-dark);
+  border-radius: 10px;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.toggleTrack[data-on="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.toggleThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.toggleTrack[data-on="true"] .toggleThumb {
+  transform: translateX(16px);
+}
+
+.toggleLabel {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
 .submitBtn {
   background: var(--accent);
   color: #fff;

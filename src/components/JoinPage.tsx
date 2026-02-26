@@ -105,6 +105,7 @@ export function JoinPage() {
   const clearSession = useStore(s => s.clearSession);
 
   const [entries, setEntries] = useState<PlayerEntry[]>([{ name: '', range: [Bracket.CORE, Bracket.CORE] }]);
+  const [strictGroup, setStrictGroup] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -148,6 +149,7 @@ export function JoinPage() {
           name: p.name.trim(),
           powers: Array.from({ length: p.range[1] - p.range[0] + 1 }, (_, i) => p.range[0] + i),
         })),
+        strictGroup: valid.length >= 2 ? strictGroup : undefined,
       });
       useStore.getState().setJoinedPlayerIds(res.playerIds);
       sessionStorage.setItem('foringi_joined', JSON.stringify({ code: sessionCode, playerIds: res.playerIds }));
@@ -209,6 +211,17 @@ export function JoinPage() {
             <button type="button" className={styles.addFriend} onClick={addFriend}>
               + Add a friend
             </button>
+          )}
+
+          {entries.length >= 2 && (
+            <label className={styles.groupToggle}>
+              <span className={styles.toggleTrack} data-on={strictGroup} onClick={() => setStrictGroup(!strictGroup)}>
+                <span className={styles.toggleThumb} />
+              </span>
+              <span className={styles.toggleLabel}>
+                {strictGroup ? 'Must sit together' : 'Prefer together, okay apart'}
+              </span>
+            </label>
           )}
 
           <button

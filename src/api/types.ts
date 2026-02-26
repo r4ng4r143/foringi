@@ -25,6 +25,7 @@ export interface CreateSessionResponse {
 
 export interface JoinSessionRequest {
   players: { name: string; powers: number[] }[];
+  strictGroup?: boolean;
 }
 
 export interface JoinSessionResponse {

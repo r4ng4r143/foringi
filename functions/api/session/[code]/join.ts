@@ -6,7 +6,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, params, request }
   if (!raw) return new Response('Session not found', { status: 404 });
 
   const session = JSON.parse(raw);
-  const body = await request.json() as { players?: { name: string; powers: number[] }[] };
+  const body = await request.json() as { players?: { name: string; powers: number[] }[]; strictGroup?: boolean };
 
   if (!body.players || !Array.isArray(body.players) || body.players.length === 0) {
     return new Response('At least one player required', { status: 400 });
@@ -37,8 +37,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, params, request }
     return new Response('No valid players provided', { status: 400 });
   }
 
-  // If multiple players joined together, create a group
-  if (playerIds.length >= 2) {
+  if (playerIds.length >= 2 && body.strictGroup) {
     const groupId = session.nextGroupId++;
     session.groups[groupId] = {
       id: groupId,
