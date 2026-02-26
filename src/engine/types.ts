@@ -91,7 +91,7 @@ export class Player {
     this.power = power;
     this.blacklist = new Set();
     this.hashValue = hashString(this.name);
-    this.lowestPower = Math.min(...Array.from(this.power));
+    this.lowestPower = this.power.size > 0 ? Math.min(...Array.from(this.power)) : 0;
   }
 
   static fromData(d: PlayerData): Player {

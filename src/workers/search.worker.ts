@@ -21,7 +21,9 @@ self.onmessage = (e: MessageEvent<SearchRequest>) => {
     const { players, agentType, playHistory, weights, groups } = e.data;
 
     const onProgress = (progress: SearchProgress) => {
-      (self as unknown as Worker).postMessage({ type: 'progress', progress } satisfies SearchMessage);
+      try {
+        (self as unknown as Worker).postMessage({ type: 'progress', progress } satisfies SearchMessage);
+      } catch { /* worker terminated mid-search */ }
     };
 
     const solutions = runSearch(players, agentType, playHistory ?? {}, weights ?? {}, groups ?? [], onProgress);

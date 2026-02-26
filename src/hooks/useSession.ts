@@ -23,9 +23,9 @@ export function useSessionPolling() {
         if (data.solution) {
           useStore.getState().setSolution(data.solution);
         }
+        setSessionName(data.name);
+        if (data.tableCount != null) setTableCount(data.tableCount);
       });
-      setSessionName(data.name);
-      if (data.tableCount != null) setTableCount(data.tableCount);
 
       if (data.eventLog) {
         setEventLog(data.eventLog);

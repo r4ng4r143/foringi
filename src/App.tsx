@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useStore, type AppView } from './store/store';
+import { useStore, suppressSync, type AppView } from './store/store';
 import { getSession } from './api/client';
 import { LandingPage } from './components/LandingPage';
 import { HostDashboard } from './components/HostDashboard';
@@ -26,13 +26,15 @@ function useRouteRestore() {
       const code = hostMatch[1].toUpperCase();
       const token = hash;
       getSession(code, token).then(data => {
-        const s = useStore.getState();
-        s.setSession(code, token);
-        s.setSessionName(data.name);
-        if (data.tableCount != null) s.setTableCount(data.tableCount);
-        if (data.nextPlayerId != null) s.loadPlayers(data.players, data.nextPlayerId);
-        if (data.groups && data.nextGroupId != null) s.loadGroups(data.groups, data.nextGroupId);
-        s.setView('host');
+        suppressSync(() => {
+          const s = useStore.getState();
+          s.setSession(code, token);
+          s.setSessionName(data.name);
+          if (data.tableCount != null) s.setTableCount(data.tableCount);
+          if (data.nextPlayerId != null) s.loadPlayers(data.players, data.nextPlayerId);
+          if (data.groups && data.nextGroupId != null) s.loadGroups(data.groups, data.nextGroupId);
+          s.setView('host');
+        });
       }).catch(() => {
         history.replaceState(null, '', '/');
       });
@@ -47,14 +49,16 @@ function useRouteRestore() {
         const incomingCode = joinMatch ? joinMatch[1].toUpperCase() : null;
 
         getSession(code).then(data => {
-          const s = useStore.getState();
-          s.setSession(code, null);
-          s.setSessionName(data.name);
-          s.setJoinedPlayerIds(playerIds);
-          s.setView('joined');
-          if (incomingCode && incomingCode !== code) {
-            s.setPendingJoinCode(incomingCode);
-          }
+          suppressSync(() => {
+            const s = useStore.getState();
+            s.setSession(code, null);
+            s.setSessionName(data.name);
+            s.setJoinedPlayerIds(playerIds);
+            s.setView('joined');
+            if (incomingCode && incomingCode !== code) {
+              s.setPendingJoinCode(incomingCode);
+            }
+          });
           history.replaceState(null, '', '/');
         }).catch(() => {
           localStorage.removeItem('foringi_joined');
@@ -67,10 +71,12 @@ function useRouteRestore() {
     if (joinMatch) {
       const code = joinMatch[1].toUpperCase();
       getSession(code).then(data => {
-        const s = useStore.getState();
-        s.setSession(code, null);
-        s.setSessionName(data.name);
-        s.setView('join');
+        suppressSync(() => {
+          const s = useStore.getState();
+          s.setSession(code, null);
+          s.setSessionName(data.name);
+          s.setView('join');
+        });
       }).catch(() => {});
       history.replaceState(null, '', '/');
     }

@@ -74,9 +74,8 @@ export async function removePlayerFromSession(code: string, hostToken: string, p
 }
 
 export async function leaveSession(code: string, playerIds: number[]): Promise<void> {
-  await fetch(`${API_BASE}/${code}/leave`, {
+  await request<void>(`${API_BASE}/${code}/leave`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ playerIds }),
   });
 }

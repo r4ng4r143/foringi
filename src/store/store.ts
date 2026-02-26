@@ -71,12 +71,15 @@ export const useStore = create<ForingiStore>((set) => ({
 
   setView: (view) => set({ view }),
   setSession: (code, hostToken) => set({ sessionCode: code, hostToken }),
-  clearSession: () => set({
-    view: 'landing', sessionCode: null, hostToken: null,
-    players: {}, nextPlayerId: 0, groups: {}, nextGroupId: 0,
-    solution: null, sessionName: 'Commander Night', tableCount: 15,
-    joinedPlayerIds: [],
-  }),
+  clearSession: () => {
+    try { localStorage.removeItem('foringi_joined'); } catch { /* SSR/test */ }
+    return set({
+      view: 'landing', sessionCode: null, hostToken: null,
+      players: {}, nextPlayerId: 0, groups: {}, nextGroupId: 0,
+      solution: null, sessionName: 'Commander Night', tableCount: 15,
+      joinedPlayerIds: [],
+    });
+  },
   setSessionName: (name) => set({ sessionName: name }),
   setTableCount: (count) => set({ tableCount: count }),
 
@@ -108,7 +111,10 @@ export const useStore = create<ForingiStore>((set) => ({
           groups[g.id] = { ...g, memberIds: g.memberIds.filter(x => x !== id) };
         }
       }
-      return { players, groups };
+      const solution = s.solution
+        ? { ...s.solution, seatings: s.solution.seatings.map(pod => pod.filter(pid => pid !== id)), podScores: undefined }
+        : null;
+      return { players, groups, solution };
     });
   },
 
@@ -175,6 +181,11 @@ export const useStore = create<ForingiStore>((set) => ({
   addPlayerToGroup: (groupId, playerId) => set(s => {
     const g = s.groups[groupId];
     if (!g || g.memberIds.length >= 4 || g.memberIds.includes(playerId)) return s;
+    const p = s.players[playerId];
+    if (p && g.memberIds.some(mid => {
+      const m = s.players[mid];
+      return m && (m.blacklist.includes(playerId) || p.blacklist.includes(mid));
+    })) return s;
     const groups = { ...s.groups };
     for (const og of Object.values(groups)) {
       if (og.id !== groupId && og.memberIds.includes(playerId)) {
@@ -266,8 +277,7 @@ function scheduleSyncToKV() {
 
 export function suppressSync(fn: () => void) {
   skipNextSync = true;
-  fn();
-  skipNextSync = false;
+  try { fn(); } finally { skipNextSync = false; }
 }
 
 useStore.subscribe(

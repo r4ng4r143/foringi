@@ -197,8 +197,8 @@ export class AStarAgent extends Agent {
           for (const pw of tp.power) { player.power.has(pw) ? exact++ : notMatch++; }
           powerMatch += exact;
           powerMismatch += notMatch;
-          const ph = Math.max(...Array.from(player.power));
-          const th = Math.max(...Array.from(tp.power));
+          const ph = player.power.size > 0 ? Math.max(...Array.from(player.power)) : 0;
+          const th = tp.power.size > 0 ? Math.max(...Array.from(tp.power)) : 0;
           if (ph !== th) powerMismatch += Math.abs(ph - th) * 3;
         }
         actionScore -= powerMatch * 5;
@@ -319,13 +319,16 @@ function generateFallbackSolution(
 
   for (const p of valid) {
     if (assigned.has(p.id)) continue;
-    const ph = Math.max(...Array.from(p.power));
+    const ph = p.power.size > 0 ? Math.max(...Array.from(p.power)) : 0;
     let bestT = -1, bestS = Infinity;
     for (let i = 0; i < tables.length; i++) {
       if (tables[i].length >= MAXSEATS) continue;
       if (tables[i].some(id => p.blacklist.has(id) || (players[id]?.blacklist.has(p.id)))) continue;
       if (tables[i].length === 0) { bestT = i; bestS = 1; continue; }
-      const avg = tables[i].reduce((s, id) => s + Math.max(...Array.from(players[id].power)), 0) / tables[i].length;
+      const avg = tables[i].reduce((s, id) => {
+        const pl = players[id];
+        return s + (pl && pl.power.size > 0 ? Math.max(...Array.from(pl.power)) : 0);
+      }, 0) / tables[i].length;
       let s = Math.abs(ph - avg) * 10;
       if (Math.abs(ph - avg) < 0.1) s = 0;
       s -= tables[i].length;
@@ -420,6 +423,7 @@ export function runSearch(
   }
 
   const engineSolutions = agent.start(onProgress);
+  heuristic.clearCache();
 
   // Prepend locked pods to every solution
   if (lockedPods.length > 0) {

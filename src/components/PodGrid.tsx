@@ -47,6 +47,7 @@ export function PodGrid() {
     const overIdStr = String(over.id);
     if (!overIdStr.startsWith('pod-')) return;
     const toPod = parseInt(overIdStr.replace('pod-', ''), 10);
+    if (isNaN(toPod) || toPod < 0) return;
     if (fromPod !== toPod && solution && toPod < solution.seatings.length) movePlayer(playerId, fromPod, toPod);
   };
 

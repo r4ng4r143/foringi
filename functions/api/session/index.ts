@@ -10,34 +10,38 @@ function generateCode(len = 6): string {
 }
 
 export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
-  const body = await request.json().catch(() => ({})) as Record<string, unknown>;
+  try {
+    const body = await request.json().catch(() => ({})) as Record<string, unknown>;
 
-  let code: string;
-  let attempts = 0;
-  do {
-    code = generateCode();
-    const existing = await env.SESSIONS.get(code);
-    if (!existing) break;
-    attempts++;
-  } while (attempts < 10);
+    let code: string;
+    let attempts = 0;
+    do {
+      code = generateCode();
+      const existing = await env.SESSIONS.get(code);
+      if (!existing) break;
+      attempts++;
+    } while (attempts < 10);
 
-  const hostToken = crypto.randomUUID();
+    const hostToken = crypto.randomUUID();
 
-  const session = {
-    code,
-    hostToken,
-    name: typeof body.name === 'string' ? body.name.slice(0, 100) : 'Commander Night',
-    tableCount: typeof body.tableCount === 'number' ? Math.min(Math.max(1, body.tableCount), 30) : 15,
-    players: {},
-    nextPlayerId: 0,
-    groups: {},
-    nextGroupId: 0,
-    solution: null,
-    eventLog: [],
-    createdAt: Date.now(),
-  };
+    const session = {
+      code,
+      hostToken,
+      name: typeof body.name === 'string' ? body.name.slice(0, 100) : 'Commander Night',
+      tableCount: typeof body.tableCount === 'number' ? Math.min(Math.max(1, body.tableCount), 30) : 15,
+      players: {},
+      nextPlayerId: 0,
+      groups: {},
+      nextGroupId: 0,
+      solution: null,
+      eventLog: [],
+      createdAt: Date.now(),
+    };
 
-  await env.SESSIONS.put(code, JSON.stringify(session), { expirationTtl: 86400 });
+    await env.SESSIONS.put(code, JSON.stringify(session), { expirationTtl: 86400 });
 
-  return Response.json({ code, hostToken });
+    return Response.json({ code, hostToken });
+  } catch (err) {
+    return Response.json({ error: 'Internal server error' }, { status: 500 });
+  }
 };

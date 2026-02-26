@@ -26,8 +26,9 @@ export function RelationshipEditor({ playerId, onClose }: Props) {
     .sort((a, b) => a.name.localeCompare(b.name));
 
   const toggle = (targetId: number) => {
-    if (playerGroupIds.has(targetId)) return;
-    player.blacklist.includes(targetId)
+    const current = players[playerId];
+    if (!current || playerGroupIds.has(targetId)) return;
+    current.blacklist.includes(targetId)
       ? removeBlacklist(playerId, targetId)
       : addBlacklist(playerId, targetId);
   };

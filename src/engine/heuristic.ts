@@ -72,7 +72,7 @@ export class Heuristic {
       if (levelsAtTable.size > 1) {
         powerDiversityPenalty += (levelsAtTable.size - 1) * this.weights.powerDiversity;
       }
-      if (pids.length > 1) {
+      if (playerPowers.size > 1) {
         const vals = Array.from(playerPowers.values());
         const diff = Math.max(...vals) - Math.min(...vals);
         if (diff > 0) powerDiversityPenalty += diff * this.weights.powerDiversity;
@@ -135,7 +135,7 @@ export class Heuristic {
     if (levelsAtTable.size > 1) {
       powerDiversityPenalty += (levelsAtTable.size - 1) * this.weights.powerDiversity;
     }
-    if (pids.length > 1) {
+    if (playerPowers.size > 1) {
       const vals = Array.from(playerPowers.values());
       const diff = Math.max(...vals) - Math.min(...vals);
       if (diff > 0) powerDiversityPenalty += diff * this.weights.powerDiversity;
@@ -169,5 +169,9 @@ export class Heuristic {
 
   getPlayCount(pid1: number, pid2: number): number {
     return this.playHistory[pid1]?.[pid2] ?? this.playHistory[pid2]?.[pid1] ?? 0;
+  }
+
+  clearCache(): void {
+    this.hashmap = {};
   }
 }

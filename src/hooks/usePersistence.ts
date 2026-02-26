@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useRef } from 'react';
-import { useStore } from '../store/store';
+import { useStore, suppressSync } from '../store/store';
 import { saveState, loadState, exportToFile, importFromFile } from '../persistence/storage';
 
 export function usePersistence() {
@@ -10,11 +10,13 @@ export function usePersistence() {
     initialized.current = true;
     const saved = loadState();
     if (saved) {
-      useStore.setState({
-        players: saved.players,
-        nextPlayerId: saved.nextPlayerId,
-        groups: saved.groups,
-        nextGroupId: saved.nextGroupId,
+      suppressSync(() => {
+        useStore.setState({
+          players: saved.players,
+          nextPlayerId: saved.nextPlayerId,
+          groups: saved.groups,
+          nextGroupId: saved.nextGroupId,
+        });
       });
     }
   }, []);
