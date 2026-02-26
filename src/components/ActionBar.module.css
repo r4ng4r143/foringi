@@ -1,0 +1,71 @@
+.bar {
+  padding: 12px 0;
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cook {
+  background: var(--accent);
+  color: #fff;
+  padding: 10px 24px;
+  font-size: 1rem;
+}
+
+.cook:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.shuffle {
+  background: var(--bg-header);
+  color: #fff;
+  padding: 10px 24px;
+  font-size: 1rem;
+}
+
+.shuffle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.cancel {
+  background: var(--blacklist);
+  color: #fff;
+}
+
+.secondary {
+  background: var(--bg-input);
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.progress {
+  margin-top: 10px;
+}
+
+.progressTrack {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--border-dark);
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.3s ease;
+  border-radius: 4px;
+}
+
+.stats {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  display: block;
+}

@@ -1,0 +1,39 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 340px;
+  min-width: 340px;
+  padding: 20px;
+  background: var(--bg-sidebar);
+  border-right: 2px solid var(--accent);
+  overflow-y: auto;
+}
+
+.title {
+  color: var(--accent);
+  margin: 0 0 16px;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.main {
+  flex: 1;
+  padding: 20px 24px;
+  background: var(--bg-surface);
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    min-width: auto;
+    border-right: none;
+    border-bottom: 2px solid var(--accent);
+  }
+}

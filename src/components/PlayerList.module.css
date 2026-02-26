@@ -1,0 +1,21 @@
+.wrapper {
+  margin-top: 16px;
+}
+
+.heading {
+  color: var(--accent);
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+}
+
+.list {
+  max-height: 22rem;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.empty {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.875rem;
+}

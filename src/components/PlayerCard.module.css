@@ -1,0 +1,109 @@
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  margin-bottom: 4px;
+  border: 1px solid var(--border);
+  transition: all var(--transition);
+  position: relative;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.name {
+  font-weight: 700;
+  color: var(--text-dark);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.groupBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  white-space: nowrap;
+}
+
+.badges {
+  display: flex;
+  gap: 3px;
+}
+
+.actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.blBtn {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  background: var(--bg-dark);
+  color: #fff;
+}
+
+.rmBtn {
+  margin-left: auto;
+  background: none;
+  color: var(--text-muted);
+  padding: 2px 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+.rmBtn:hover {
+  color: #f56565;
+  transform: none;
+}
+
+.blSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  background: #fef2f2;
+  border-left: 3px solid var(--blacklist);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff;
+  color: var(--text-dark);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+.tagRemove {
+  background: none;
+  padding: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.tagRemove:hover {
+  color: var(--blacklist);
+  transform: none;
+}

@@ -1,0 +1,76 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  background: var(--bg-surface);
+  border-radius: var(--radius);
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+}
+
+.input {
+  flex: 1;
+}
+
+.addBtn {
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 20px;
+  white-space: nowrap;
+}
+
+.addBtn:hover {
+  opacity: 0.9;
+}
+
+.brackets {
+  display: flex;
+  gap: 4px;
+}
+
+.bracketBtn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 6px 2px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  border: 2px solid transparent;
+  color: var(--text);
+  transition: all 0.15s ease;
+}
+
+.bracketBtn:hover {
+  transform: none;
+  opacity: 0.9;
+}
+
+.bracketBtn.selected {
+  border-color: #fff;
+  transform: none;
+}
+
+.b1 { background: var(--bracket-1); color: #333; }
+.b2 { background: var(--bracket-2); color: #333; }
+.b3 { background: var(--bracket-3); color: #333; }
+.b4 { background: var(--bracket-4); color: #fff; }
+.b5 { background: var(--bracket-5); color: #fff; }
+
+.num {
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.label {
+  font-size: 0.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 1;
+}

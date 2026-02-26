@@ -1,0 +1,83 @@
+.editor {
+  margin-top: 8px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.titleBl {
+  font-weight: 700;
+  color: var(--blacklist);
+  font-size: 0.85rem;
+}
+
+.closeBtn {
+  background: none;
+  padding: 0;
+  font-size: 18px;
+  color: var(--text-muted);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeBtn:hover {
+  color: var(--text-dark);
+  transform: none;
+}
+
+.options {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.option {
+  text-align: left;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-dark);
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.option:hover {
+  background: var(--bg-card-hover);
+  transform: none;
+}
+
+.activeBl {
+  background: #fef2f2;
+  color: var(--blacklist);
+  border-left: 3px solid var(--blacklist);
+}
+
+.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.noPlayers {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-style: italic;
+  margin: 0;
+  padding: 8px;
+}
