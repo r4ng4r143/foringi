@@ -1,10 +1,81 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 import { useStore } from '../store/store';
-import { joinSession } from '../api/client';
+import { joinSession, getSession } from '../api/client';
 import { Bracket, BRACKET_LABELS } from '../engine/types';
+import type { PlayerData, SolutionData } from '../engine/types';
 import styles from './JoinPage.module.css';
 
 const ALL_BRACKETS = [Bracket.EXHIBITION, Bracket.CORE, Bracket.UPGRADED, Bracket.OPTIMIZED, Bracket.CEDH];
+
+function JoinedView() {
+  const sessionCode = useStore(s => s.sessionCode);
+  const sessionName = useStore(s => s.sessionName);
+  const joinedIds = useStore(s => s.joinedPlayerIds);
+  const clearSession = useStore(s => s.clearSession);
+
+  const [solution, setSolution] = useState<SolutionData | null>(null);
+  const [players, setPlayers] = useState<Record<number, PlayerData>>({});
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (!sessionCode) return;
+    const poll = async () => {
+      try {
+        const data = await getSession(sessionCode);
+        setPlayers(data.players);
+        if (data.solution) setSolution(data.solution);
+      } catch { /* session may have ended */ }
+    };
+    poll();
+    intervalRef.current = setInterval(poll, 5000);
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [sessionCode]);
+
+  const myPods: { podIndex: number; playerId: number; mates: number[] }[] = [];
+  if (solution) {
+    for (const pid of joinedIds) {
+      for (let i = 0; i < solution.seatings.length; i++) {
+        if (solution.seatings[i].includes(pid)) {
+          myPods.push({ podIndex: i, playerId: pid, mates: solution.seatings[i].filter(id => id !== pid) });
+        }
+      }
+    }
+  }
+
+  return (
+    <div className={styles.page}>
+      <div className={styles.card}>
+        <p className={styles.sessionInfo}>{sessionName}</p>
+        {myPods.length > 0 ? (
+          <>
+            <h2 className={styles.title}>Your pod{myPods.length > 1 ? 's' : ''}</h2>
+            {myPods.map(pod => (
+              <div key={pod.playerId} className={styles.podCard}>
+                <p className={styles.podLabel}>
+                  Table {pod.podIndex + 1}
+                  {myPods.length > 1 && <span className={styles.podFor}> — {players[pod.playerId]?.name}</span>}
+                </p>
+                <ul className={styles.podMates}>
+                  {pod.mates.map(id => (
+                    <li key={id}>{players[id]?.name ?? `Player ${id}`}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            <div className={styles.check}>&#10003;</div>
+            <h2 className={styles.title}>You're in!</h2>
+            <p className={styles.subtitle}>Waiting for the host to start...</p>
+            <div className={styles.dots}><span /><span /><span /></div>
+          </>
+        )}
+        <button className={styles.backBtn} onClick={clearSession}>Leave</button>
+      </div>
+    </div>
+  );
+}
 
 interface PlayerEntry {
   name: string;
@@ -22,17 +93,7 @@ export function JoinPage() {
   const [error, setError] = useState('');
 
   if (view === 'joined') {
-    return (
-      <div className={styles.page}>
-        <div className={styles.card}>
-          <div className={styles.check}>&#10003;</div>
-          <h2 className={styles.title}>You're in!</h2>
-          <p className={styles.subtitle}>Head to the tables. The host will announce pods shortly.</p>
-          <p className={styles.sessionInfo}>{sessionName}</p>
-          <button className={styles.backBtn} onClick={clearSession}>Leave</button>
-        </div>
-      </div>
-    );
+    return <JoinedView />;
   }
 
   const updateName = (i: number, name: string) => {
@@ -68,9 +129,10 @@ export function JoinPage() {
     setLoading(true);
     setError('');
     try {
-      await joinSession(sessionCode, {
+      const res = await joinSession(sessionCode, {
         players: valid.map(p => ({ name: p.name.trim(), powers: p.brackets })),
       });
+      useStore.getState().setJoinedPlayerIds(res.playerIds);
       useStore.getState().setView('joined');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to join');

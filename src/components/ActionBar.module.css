@@ -8,6 +8,20 @@
   flex-wrap: wrap;
 }
 
+.start {
+  background: var(--whitelist);
+  color: #111;
+  padding: 10px 28px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.start:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .cook {
   background: var(--accent);
   color: #fff;

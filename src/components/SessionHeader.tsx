@@ -10,6 +10,7 @@ export function SessionHeader() {
   const clearSession = useStore(s => s.clearSession);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [copied, setCopied] = useState(false);
+  const [confirmEnd, setConfirmEnd] = useState(false);
 
   const joinUrl = sessionCode
     ? `${window.location.origin}/join/${sessionCode}`
@@ -44,7 +45,20 @@ export function SessionHeader() {
           </button>
         </div>
         <p className={styles.players}>{playerCount} player{playerCount !== 1 ? 's' : ''} signed up</p>
-        <button className={styles.endBtn} onClick={clearSession}>End Session</button>
+        <button
+          className={`${styles.endBtn} ${confirmEnd ? styles.endConfirm : ''}`}
+          onClick={() => {
+            if (confirmEnd) {
+              history.replaceState(null, '', '/');
+              clearSession();
+            } else {
+              setConfirmEnd(true);
+              setTimeout(() => setConfirmEnd(false), 3000);
+            }
+          }}
+        >
+          {confirmEnd ? 'Are you sure?' : 'End Session'}
+        </button>
       </div>
       <div className={styles.qr}>
         <canvas ref={canvasRef} />

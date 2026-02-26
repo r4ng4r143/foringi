@@ -61,6 +61,11 @@
   transform: none;
 }
 
+.endConfirm {
+  color: var(--blacklist);
+  font-weight: 700;
+}
+
 .qr {
   text-align: center;
   flex-shrink: 0;

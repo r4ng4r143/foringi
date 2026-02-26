@@ -49,6 +49,18 @@ export async function postSolution(code: string, hostToken: string, solution: So
   });
 }
 
+export async function patchSession(
+  code: string,
+  hostToken: string,
+  data: Record<string, unknown>,
+): Promise<void> {
+  await request<void>(`${API_BASE}/${code}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'X-Host-Token': hostToken },
+    body: JSON.stringify(data),
+  });
+}
+
 export async function removePlayerFromSession(code: string, hostToken: string, playerId: number): Promise<void> {
   await request<void>(`${API_BASE}/${code}/player/${playerId}`, {
     method: 'DELETE',

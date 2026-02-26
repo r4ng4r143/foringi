@@ -12,31 +12,51 @@ const views: Record<AppView, React.FC> = {
   joined: JoinPage,
 };
 
-function useJoinRoute() {
+function useRouteRestore() {
   useEffect(() => {
-    const match = window.location.pathname.match(/^\/join\/([A-Z0-9]{4,8})$/i);
-    if (!match) return;
-    const code = match[1].toUpperCase();
-    const { view, setSession, setSessionName, setTableCount, loadPlayers, loadGroups, setView } = useStore.getState();
+    const { view } = useStore.getState();
     if (view !== 'landing') return;
 
-    getSession(code).then(data => {
-      setSession(code, null);
-      setSessionName(data.name);
-      setTableCount(data.tableCount);
-      loadPlayers(data.players, data.nextPlayerId);
-      loadGroups(data.groups, data.nextGroupId);
-      setView('join');
-    }).catch(() => {
-      // invalid/expired session -- stay on landing
-    });
+    const path = window.location.pathname;
+    const hash = window.location.hash.slice(1);
 
-    history.replaceState(null, '', '/');
+    const hostMatch = path.match(/^\/host\/([A-Z0-9]{4,8})$/i);
+    if (hostMatch && hash) {
+      const code = hostMatch[1].toUpperCase();
+      const token = hash;
+      getSession(code, token).then(data => {
+        const s = useStore.getState();
+        s.setSession(code, token);
+        s.setSessionName(data.name);
+        s.setTableCount(data.tableCount);
+        s.loadPlayers(data.players, data.nextPlayerId);
+        s.loadGroups(data.groups, data.nextGroupId);
+        s.setView('host');
+      }).catch(() => {
+        history.replaceState(null, '', '/');
+      });
+      return;
+    }
+
+    const joinMatch = path.match(/^\/join\/([A-Z0-9]{4,8})$/i);
+    if (joinMatch) {
+      const code = joinMatch[1].toUpperCase();
+      getSession(code).then(data => {
+        const s = useStore.getState();
+        s.setSession(code, null);
+        s.setSessionName(data.name);
+        s.setTableCount(data.tableCount);
+        s.loadPlayers(data.players, data.nextPlayerId);
+        s.loadGroups(data.groups, data.nextGroupId);
+        s.setView('join');
+      }).catch(() => {});
+      history.replaceState(null, '', '/');
+    }
   }, []);
 }
 
 export function App() {
-  useJoinRoute();
+  useRouteRestore();
   const view = useStore(s => s.view);
   const View = views[view];
   return <View />;

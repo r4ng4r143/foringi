@@ -8,13 +8,27 @@ export function ActionBar() {
   const isSearching = useStore(s => s.isSearching);
   const progress = useStore(s => s.searchProgress);
   const playerCount = useStore(s => Object.keys(s.players).length);
+  const hasSolution = useStore(s => s.solution !== null);
   const { startSearch, cancelSearch } = useSearch();
   const { handleExport, handleImport } = usePersistence();
   const fileRef = useRef<HTMLInputElement>(null);
 
+  const handleStart = () => {
+    if (!hasSolution) {
+      startSearch('astar');
+    }
+  };
+
   return (
     <div className={styles.bar}>
       <div className={styles.buttons}>
+        <button
+          className={styles.start}
+          disabled={isSearching || playerCount === 0 || hasSolution}
+          onClick={handleStart}
+        >
+          {isSearching ? 'Starting...' : hasSolution ? 'Started' : 'Start'}
+        </button>
         <button
           className={styles.cook}
           disabled={isSearching || playerCount === 0}

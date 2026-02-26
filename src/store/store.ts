@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { PlayerData, GroupData, SolutionData, SearchProgress } from '../engine/types';
-import { removePlayerFromSession } from '../api/client';
+import { removePlayerFromSession, patchSession } from '../api/client';
 
 export type AppView = 'landing' | 'host' | 'join' | 'joined';
 
@@ -45,6 +45,10 @@ interface ForingiStore {
   movePlayer: (playerId: number, fromPod: number, toPod: number) => void;
   swapPlayers: (aId: number, bId: number) => void;
 
+  // --- Player join (client-side) ---
+  joinedPlayerIds: number[];
+  setJoinedPlayerIds: (ids: number[]) => void;
+
   // --- Search ---
   isSearching: boolean;
   searchProgress: SearchProgress;
@@ -65,6 +69,7 @@ export const useStore = create<ForingiStore>((set) => ({
     view: 'landing', sessionCode: null, hostToken: null,
     players: {}, nextPlayerId: 0, groups: {}, nextGroupId: 0,
     solution: null, sessionName: 'Commander Night', tableCount: 15,
+    joinedPlayerIds: [],
   }),
   setSessionName: (name) => set({ sessionName: name }),
   setTableCount: (count) => set({ tableCount: count }),
@@ -207,6 +212,9 @@ export const useStore = create<ForingiStore>((set) => ({
     return { solution: { ...s.solution, seatings } };
   }),
 
+  joinedPlayerIds: [],
+  setJoinedPlayerIds: (ids) => set({ joinedPlayerIds: ids }),
+
   isSearching: false,
   searchProgress: {
     nodesExpanded: 0, nodesGenerated: 0, nodesSkipped: 0,
@@ -215,3 +223,32 @@ export const useStore = create<ForingiStore>((set) => ({
   setSearching: (v) => set({ isSearching: v }),
   setSearchProgress: (p) => set({ searchProgress: p }),
 }));
+
+let syncTimer: ReturnType<typeof setTimeout> | null = null;
+let skipNextSync = false;
+
+function scheduleSyncToKV() {
+  if (skipNextSync) return;
+  const { sessionCode, hostToken } = useStore.getState();
+  if (!sessionCode || !hostToken) return;
+  if (syncTimer) clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => {
+    const { players, nextPlayerId, groups, nextGroupId, sessionCode: code, hostToken: token } = useStore.getState();
+    if (!code || !token) return;
+    patchSession(code, token, { players, nextPlayerId, groups, nextGroupId }).catch(console.error);
+  }, 500);
+}
+
+export function suppressSync(fn: () => void) {
+  skipNextSync = true;
+  fn();
+  skipNextSync = false;
+}
+
+useStore.subscribe(
+  (state, prev) => {
+    if (state.players !== prev.players || state.groups !== prev.groups) {
+      scheduleSyncToKV();
+    }
+  },
+);

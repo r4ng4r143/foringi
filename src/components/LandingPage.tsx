@@ -23,6 +23,7 @@ export function LandingPage() {
       const res = await createSession({ name: name.trim() || undefined });
       setSession(res.code, res.hostToken);
       setSessionName(name.trim() || 'Commander Night');
+      history.replaceState(null, '', `/host/${res.code}#${res.hostToken}`);
       setView('host');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create session');

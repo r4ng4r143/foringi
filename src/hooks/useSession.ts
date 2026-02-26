@@ -1,5 +1,5 @@
 import { useCallback, useRef, useEffect } from 'react';
-import { useStore } from '../store/store';
+import { useStore, suppressSync } from '../store/store';
 import { getSession } from '../api/client';
 
 const POLL_INTERVAL = 5000;
@@ -13,8 +13,10 @@ export function useSessionPolling() {
 
     try {
       const data = await getSession(sessionCode, hostToken);
-      loadPlayers(data.players, data.nextPlayerId);
-      loadGroups(data.groups, data.nextGroupId);
+      suppressSync(() => {
+        loadPlayers(data.players, data.nextPlayerId);
+        loadGroups(data.groups, data.nextGroupId);
+      });
       setSessionName(data.name);
       setTableCount(data.tableCount);
       if (data.solution) {

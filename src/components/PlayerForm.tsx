@@ -8,13 +8,20 @@ const ALL_BRACKETS = [Bracket.EXHIBITION, Bracket.CORE, Bracket.UPGRADED, Bracke
 export function PlayerForm() {
   const addPlayer = useStore(s => s.addPlayer);
   const [name, setName] = useState('');
-  const [bracket, setBracket] = useState(Bracket.CORE);
+  const [brackets, setBrackets] = useState<number[]>([Bracket.CORE]);
+
+  const toggleBracket = (b: number) => {
+    setBrackets(prev => {
+      const has = prev.includes(b);
+      return has ? prev.filter(x => x !== b) : [...prev, b].sort();
+    });
+  };
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const trimmed = name.trim();
-    if (!trimmed) return;
-    addPlayer(trimmed, [bracket]);
+    if (!trimmed || brackets.length === 0) return;
+    addPlayer(trimmed, brackets);
     setName('');
   };
 
@@ -35,8 +42,8 @@ export function PlayerForm() {
           <button
             key={b}
             type="button"
-            className={`${styles.bracketBtn} ${styles[`b${b}`]} ${bracket === b ? styles.selected : ''}`}
-            onClick={() => setBracket(b)}
+            className={`${styles.bracketBtn} ${styles[`b${b}`]} ${brackets.includes(b) ? styles.selected : ''}`}
+            onClick={() => toggleBracket(b)}
           >
             <span className={styles.num}>{b}</span>
             <span className={styles.label}>{BRACKET_LABELS[b]}</span>
