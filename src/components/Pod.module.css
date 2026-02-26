@@ -49,6 +49,8 @@
   cursor: grab;
   user-select: none;
   transition: background 0.15s ease;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .seat:hover {
