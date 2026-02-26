@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useStore } from '../store/store';
 import { createSession, getSession } from '../api/client';
+import { GuideButton } from './GuideModal';
+import { InfoPopup } from './InfoPopup';
+import aboutMd from '../content/about.md?raw';
 import styles from './LandingPage.module.css';
 
 export function LandingPage() {
@@ -95,6 +98,11 @@ export function LandingPage() {
         </div>
 
         {error && <p className={styles.error}>{error}</p>}
+
+        <div className={styles.links}>
+          <GuideButton />
+          <InfoPopup label="About" title="About Foringi" markdown={aboutMd} />
+        </div>
       </div>
     </div>
   );

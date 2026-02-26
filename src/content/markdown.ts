@@ -3,9 +3,13 @@ export function renderMarkdown(raw: string): string {
   const html: string[] = [];
   let i = 0;
 
+  const slugify = (text: string) =>
+    text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
   const inline = (text: string) =>
     text
       .replace(/!\[.*?\]\(.*?\)/g, '')
+      .replace(/\[([^\]]+)\]\((#[^)]+)\)/g, '<a href="$2">$1</a>')
       .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/`([^`]+)`/g, '<code>$1</code>')
@@ -17,15 +21,18 @@ export function renderMarkdown(raw: string): string {
     if (!line.trim()) { i++; continue; }
 
     if (line.startsWith('# ')) {
-      html.push(`<h1>${inline(line.slice(2))}</h1>`);
+      const text = line.slice(2);
+      html.push(`<h1 id="${slugify(text)}">${inline(text)}</h1>`);
       i++; continue;
     }
     if (line.startsWith('## ')) {
-      html.push(`<h2>${inline(line.slice(3))}</h2>`);
+      const text = line.slice(3);
+      html.push(`<h2 id="${slugify(text)}">${inline(text)}</h2>`);
       i++; continue;
     }
     if (line.startsWith('### ')) {
-      html.push(`<h3>${inline(line.slice(4))}</h3>`);
+      const text = line.slice(4);
+      html.push(`<h3 id="${slugify(text)}">${inline(text)}</h3>`);
       i++; continue;
     }
 

@@ -19,6 +19,7 @@ function JoinedView() {
 
   const [solution, setSolution] = useState<SolutionData | null>(null);
   const [players, setPlayers] = useState<Record<number, PlayerData>>({});
+  const [removed, setRemoved] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -26,6 +27,13 @@ function JoinedView() {
     const poll = async () => {
       try {
         const data = await getSession(sessionCode);
+        const stillIn = joinedIds.some(id => String(id) in data.players);
+        if (!stillIn) {
+          setRemoved(true);
+          localStorage.removeItem('foringi_joined');
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          return;
+        }
         setPlayers(data.players);
         if (data.solution) setSolution(data.solution);
       } catch { /* session may have ended */ }
@@ -33,7 +41,7 @@ function JoinedView() {
     poll();
     intervalRef.current = setInterval(poll, 5000);
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [sessionCode]);
+  }, [sessionCode, joinedIds]);
 
   const myPods: { podIndex: number; playerId: number; mates: number[] }[] = [];
   if (solution) {
@@ -46,10 +54,26 @@ function JoinedView() {
     }
   }
 
+  if (removed) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.card}>
+          <p className={styles.sessionInfo}>{sessionName}</p>
+          <h2 className={styles.title}>You've been removed</h2>
+          <p className={styles.subtitle}>The host removed you from this session.</p>
+          <button className={styles.backBtn} onClick={clearSession}>Back to home</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <p className={styles.sessionInfo}>{sessionName}</p>
+        <p className={styles.sessionInfo}>
+          {sessionName}
+          {sessionCode && <span className={styles.sessionCode}>{sessionCode}</span>}
+        </p>
         {myPods.length > 0 ? (
           <>
             <h2 className={styles.title}>

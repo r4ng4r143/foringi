@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { renderMarkdown } from '../content/markdown';
 import guideRaw from '../../GUIDE.md?raw';
 import styles from './GuideModal.module.css';
@@ -20,12 +20,25 @@ export function GuideButton({ className }: { className?: string }) {
 
 function GuideModal({ onClose }: { onClose: () => void }) {
   const close = useCallback(onClose, [onClose]);
+  const bodyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [close]);
+
+  const handleClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'A') {
+      const href = target.getAttribute('href');
+      if (href?.startsWith('#')) {
+        e.preventDefault();
+        const el = bodyRef.current?.querySelector(href);
+        el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
 
   return (
     <>
@@ -35,7 +48,12 @@ function GuideModal({ onClose }: { onClose: () => void }) {
           <span className={styles.title}>User Guide</span>
           <button type="button" className={styles.close} onClick={close}>&times;</button>
         </div>
-        <div className={styles.body} dangerouslySetInnerHTML={{ __html: guideHtml }} />
+        <div
+          ref={bodyRef}
+          className={styles.body}
+          dangerouslySetInnerHTML={{ __html: guideHtml }}
+          onClick={handleClick}
+        />
       </div>
     </>
   );
