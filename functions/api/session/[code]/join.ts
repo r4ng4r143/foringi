@@ -37,12 +37,13 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, params, request }
     return new Response('No valid players provided', { status: 400 });
   }
 
-  if (playerIds.length >= 2 && body.strictGroup) {
+  if (playerIds.length >= 2) {
     const groupId = session.nextGroupId++;
     session.groups[groupId] = {
       id: groupId,
       name: `Group ${groupId + 1}`,
       memberIds: playerIds,
+      strict: body.strictGroup ?? false,
     };
   }
 

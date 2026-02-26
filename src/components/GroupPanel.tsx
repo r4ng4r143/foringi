@@ -30,8 +30,10 @@ function GroupCard({ group }: { group: GroupData }) {
   const players = useStore(s => s.players);
   const groups = useStore(s => s.groups);
   const deleteGroup = useStore(s => s.deleteGroup);
+  const toggleGroupStrict = useStore(s => s.toggleGroupStrict);
   const addPlayerToGroup = useStore(s => s.addPlayerToGroup);
   const removePlayerFromGroup = useStore(s => s.removePlayerFromGroup);
+  const isStrict = group.strict !== false;
 
   const memberNames = group.memberIds
     .map(id => players[id])
@@ -54,6 +56,18 @@ function GroupCard({ group }: { group: GroupData }) {
           <span className={styles.count}>{group.memberIds.length}/4</span>
         </span>
         <button className={styles.deleteBtn} onClick={() => deleteGroup(group.id)}>×</button>
+      </div>
+
+      <div className={styles.strictRow}>
+        <span
+          className={`${styles.strictToggle} ${isStrict ? styles.strictOn : ''}`}
+          onClick={() => toggleGroupStrict(group.id)}
+        >
+          <span className={styles.strictThumb} />
+        </span>
+        <span className={styles.strictLabel}>
+          {isStrict ? 'Must sit together' : 'Prefer together'}
+        </span>
       </div>
 
       <div className={styles.members}>

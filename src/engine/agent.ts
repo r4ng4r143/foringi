@@ -391,6 +391,7 @@ export function runSearch(
   const groupedIds = new Set<number>();
 
   for (const g of groups) {
+    if (g.strict === false) continue;
     const validMembers = g.memberIds.filter(id => players[id]);
     if (validMembers.length === 0) continue;
 

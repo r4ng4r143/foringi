@@ -34,6 +34,7 @@ interface ForingiStore {
   nextGroupId: number;
   createGroup: (name?: string) => void;
   deleteGroup: (id: number) => void;
+  toggleGroupStrict: (id: number) => void;
   addPlayerToGroup: (groupId: number, playerId: number) => void;
   removePlayerFromGroup: (groupId: number, playerId: number) => void;
   loadGroups: (groups: Record<number, GroupData>, nextId: number) => void;
@@ -151,13 +152,19 @@ export const useStore = create<ForingiStore>((set) => ({
     const id = s.nextGroupId;
     return {
       nextGroupId: id + 1,
-      groups: { ...s.groups, [id]: { id, name: name ?? `Group ${id + 1}`, memberIds: [] } },
+      groups: { ...s.groups, [id]: { id, name: name ?? `Group ${id + 1}`, memberIds: [], strict: true } },
     };
   }),
 
   deleteGroup: (id) => set(s => {
     const { [id]: _, ...rest } = s.groups;
     return { groups: rest };
+  }),
+
+  toggleGroupStrict: (id) => set(s => {
+    const g = s.groups[id];
+    if (!g) return s;
+    return { groups: { ...s.groups, [id]: { ...g, strict: !(g.strict !== false) } } };
   }),
 
   addPlayerToGroup: (groupId, playerId) => set(s => {

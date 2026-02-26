@@ -66,6 +66,7 @@ export interface GroupData {
   id: number;
   name: string;
   memberIds: number[];
+  strict?: boolean;
 }
 
 export interface SolutionData {

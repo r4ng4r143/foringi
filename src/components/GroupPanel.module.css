@@ -68,6 +68,51 @@
   transform: none;
 }
 
+.strictRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+}
+
+.strictToggle {
+  position: relative;
+  width: 28px;
+  height: 16px;
+  background: var(--bg-input, #e2e8f0);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.strictToggle.strictOn {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.strictThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.strictOn .strictThumb {
+  transform: translateX(12px);
+}
+
+.strictLabel {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
 .members {
   padding: 6px 10px;
   display: flex;

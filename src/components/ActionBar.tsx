@@ -1,8 +1,9 @@
 import { useStore } from '../store/store';
 import { useSearch } from '../hooks/useSearch';
 import { usePersistence } from '../hooks/usePersistence';
+import { postSolution } from '../api/client';
 import styles from './ActionBar.module.css';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 export function ActionBar() {
   const isSearching = useStore(s => s.isSearching);
@@ -10,12 +11,28 @@ export function ActionBar() {
   const playerCount = useStore(s => Object.keys(s.players).length);
   const hasSolution = useStore(s => s.solution !== null);
   const { startSearch, cancelSearch } = useSearch();
+  const solution = useStore(s => s.solution);
+  const sessionCode = useStore(s => s.sessionCode);
+  const hostToken = useStore(s => s.hostToken);
   const { handleExport, handleImport } = usePersistence();
   const fileRef = useRef<HTMLInputElement>(null);
+  const [notifying, setNotifying] = useState(false);
 
   const handleStart = () => {
     if (!hasSolution) {
       startSearch('astar');
+    }
+  };
+
+  const handleNotify = async () => {
+    if (!solution || !sessionCode || hostToken == null) return;
+    setNotifying(true);
+    try {
+      await postSolution(sessionCode, hostToken, solution);
+    } catch (err) {
+      console.error('Failed to notify players:', err);
+    } finally {
+      setNotifying(false);
     }
   };
 
@@ -45,6 +62,15 @@ export function ActionBar() {
         </button>
         {isSearching && (
           <button className={styles.cancel} onClick={cancelSearch}>Cancel</button>
+        )}
+        {hasSolution && (
+          <button
+            className={styles.notify}
+            disabled={notifying}
+            onClick={handleNotify}
+          >
+            {notifying ? 'Sending...' : 'Notify Players'}
+          </button>
         )}
         <button className={styles.secondary} onClick={handleExport}>Export</button>
         <button className={styles.secondary} onClick={() => fileRef.current?.click()}>

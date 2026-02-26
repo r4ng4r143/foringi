@@ -53,6 +53,19 @@
   color: #fff;
 }
 
+.notify {
+  background: var(--whitelist);
+  color: #111;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.notify:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .secondary {
   background: var(--bg-input);
   color: var(--text);

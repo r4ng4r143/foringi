@@ -39,7 +39,7 @@ function useRouteRestore() {
       return;
     }
 
-    const saved = sessionStorage.getItem('foringi_joined');
+    const saved = localStorage.getItem('foringi_joined');
     if (saved) {
       try {
         const { code, playerIds } = JSON.parse(saved);
@@ -49,11 +49,12 @@ function useRouteRestore() {
           s.setSessionName(data.name);
           s.setJoinedPlayerIds(playerIds);
           s.setView('joined');
+          history.replaceState(null, '', '/');
         }).catch(() => {
-          sessionStorage.removeItem('foringi_joined');
+          localStorage.removeItem('foringi_joined');
         });
         return;
-      } catch { sessionStorage.removeItem('foringi_joined'); }
+      } catch { localStorage.removeItem('foringi_joined'); }
     }
 
     const joinMatch = path.match(/^\/join\/([A-Z0-9]{4,8})$/i);
