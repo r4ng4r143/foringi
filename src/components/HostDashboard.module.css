@@ -58,6 +58,29 @@
   margin-bottom: 16px;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.guideBtn {
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.guideBtn:hover {
+  color: var(--accent-light);
+  border-color: var(--accent-light);
+  transform: none;
+}
+
 .title {
   font-family: 'Belwe Bold', 'Cinzel', serif;
   color: var(--accent);

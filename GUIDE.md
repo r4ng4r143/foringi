@@ -27,12 +27,18 @@ The dashboard displays a **QR code** and the **session code**. Players can eithe
 
 Use the player form on the sidebar to add players yourself. Enter a name and select one or more power level brackets (see [Power Levels](#power-levels) below).
 
+### Finding Players
+
+The player list includes a search bar. Type a name to filter the list instantly. When pods have been assigned, each player card shows a **Table X** badge -- tap it to scroll directly to that pod and open its detail view.
+
 ### Managing Groups
 
-Groups let players sit together. Tap **Add Group** in the group panel, give it a name, and select 2-4 members.
+Groups let players sit together. Tap **Add Group** in the group panel, give it a name, and select 2-4 members. Each group has a **strict/lax toggle**:
 
-- **Groups of 4** become a locked pod -- they're placed together and the algorithm won't rearrange them.
-- **Groups of 2-3** are pre-seated at the same table, but the remaining seats are filled by the algorithm.
+- **Strict** ("Must sit together") -- The group is locked into the same pod. Groups of 4 become a full locked pod; groups of 2-3 are pre-seated and the remaining seats are filled by the algorithm.
+- **Lax** ("Prefer together") -- The algorithm treats members as independent players. They may end up together but it's not guaranteed. This is the default when players join as a group.
+
+The host can change this toggle at any time from the group panel. Players can also set their preference when joining (see [Joining with Friends](#joining-with-friends)).
 
 ### Setting Blacklists
 
@@ -50,6 +56,13 @@ The action bar has three main buttons:
 
 A progress bar shows how the search is going (nodes explored and solutions found). You can cancel at any time.
 
+### Notifying Players
+
+After pods are assigned, a **Notify Players** button appears. Tap it to re-publish the current roster to all players. This is useful when:
+
+- You've made manual adjustments (drag-and-drop) and want players to see the updated seating.
+- Some players missed the initial notification (e.g. their phone was locked).
+
 ### Reading the Results
 
 After a search completes, the pod grid shows:
@@ -58,9 +71,13 @@ After a search completes, the pod grid shows:
 - Player names and their power level badges.
 - The solution's heuristic score (lower is better).
 
+Tap a **pod header** (e.g. "Table 1") to open a detail modal showing each player's power bracket, group membership, and blacklist entries for that table.
+
 ### Manual Adjustments
 
 Drag and drop players between pods to make manual changes after the algorithm runs. This is useful for last-minute swaps or accommodating preferences the algorithm doesn't know about.
+
+To remove a player from their pod entirely, drag them to the **trash zone** that appears at the bottom of the grid while dragging. The player stays in the session but is no longer seated -- they can be re-seated by running Cook or Shuffle again.
 
 ### Exporting and Importing Player Data
 
@@ -80,7 +97,14 @@ Drag and drop players between pods to make manual changes after the algorithm ru
 
 ### Joining with Friends
 
-You can join with up to 3 friends in a single form (4 players total). Each person enters their name and brackets. The host will see you as a group.
+You can join with up to 3 friends in a single form (4 players total). Tap **+ Add a friend** to add extra slots. Each person enters their name and selects their brackets.
+
+When you add a second player, a **group seating toggle** appears:
+
+- **Prefer together, okay apart** (default) -- The algorithm will try to seat you together but may split you up if it produces better overall balance.
+- **Must sit together** -- Your group is locked into the same table. Toggle this on if sitting together is non-negotiable.
+
+The host can see your group and change this setting from their dashboard.
 
 ### Power Levels
 
@@ -105,9 +129,13 @@ Once the host runs the matchmaker, your screen updates to show:
 
 The page polls for updates every few seconds, so you'll see your assignment shortly after the host locks it in.
 
+### Session Persistence
+
+Your session is saved to your browser. If you close the tab or navigate away, reopening the app will return you to your current session automatically. You can only be in one session at a time -- leave your current session before joining a new one.
+
 ### Leaving a Session
 
-Tap **Leave** on the joined screen to remove yourself from the session.
+Tap **Leave** on the joined screen to remove yourself from the session and free up your slot.
 
 ## How Matchmaking Works
 
@@ -117,8 +145,12 @@ The algorithm considers several factors when assigning players to pods:
 - **Blacklists** -- Players on each other's blacklist will not be seated together. This carries the highest penalty.
 - **Table size** -- Pods are best with 4 players. Empty seats and unseated players are both penalised.
 - **Play history** -- If you've played together recently, the algorithm lightly prefers seating you with someone new.
-- **Groups** -- Pre-formed groups are respected. Full groups of 4 get their own table automatically.
+- **Groups** -- Strict groups are locked together. Full strict groups of 4 get their own table automatically. Lax groups are treated as independent players -- the algorithm may seat them together but isn't required to.
 
 The **Cook** button explores thousands of possible arrangements using an A\* search and picks the best ones. The **Shuffle** button makes a quick random assignment -- useful for variety or when speed matters more than perfection.
 
 The score shown on each solution is a sum of penalties. A score of 0 would mean every player is perfectly matched -- in practice, lower is better and the algorithm returns the best arrangements it finds within 20 seconds.
+
+## Need Help?
+
+This guide is available in-app. Tap the **Guide** button on any screen to open it.

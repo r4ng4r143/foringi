@@ -5,6 +5,7 @@ import { PlayerList } from './PlayerList';
 import { GroupPanel } from './GroupPanel';
 import { ActionBar } from './ActionBar';
 import { PodGrid } from './PodGrid';
+import { GuideButton } from './GuideModal';
 import { useSessionPolling } from '../hooks/useSession';
 import type { SessionEvent } from '../api/types';
 import styles from './HostDashboard.module.css';
@@ -81,7 +82,10 @@ export function HostDashboard() {
       <aside className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
           <h2 className={styles.title}>FORINGI</h2>
-          <ActivityLog events={eventLog} unread={unreadCount} onOpen={markRead} />
+          <div className={styles.headerActions}>
+            <GuideButton className={styles.guideBtn} />
+            <ActivityLog events={eventLog} unread={unreadCount} onOpen={markRead} />
+          </div>
         </div>
         <PlayerForm />
         <div className={styles.tabBar}>

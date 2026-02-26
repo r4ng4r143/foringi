@@ -227,11 +227,17 @@
   margin: 12px 0 0;
 }
 
+.bottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
 .backBtn {
   background: none;
   color: var(--text-muted);
   font-size: 0.85rem;
-  margin-top: 16px;
   padding: 4px;
 }
 

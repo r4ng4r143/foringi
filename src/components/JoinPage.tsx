@@ -4,6 +4,7 @@ import { joinSession, getSession, leaveSession } from '../api/client';
 import { Bracket, BRACKET_LABELS } from '../engine/types';
 import type { PlayerData, SolutionData } from '../engine/types';
 import { InfoPopup } from './InfoPopup';
+import { GuideButton } from './GuideModal';
 import howItWorks from '../content/how-it-works.md?raw';
 import aboutYourPod from '../content/about-your-pod.md?raw';
 import styles from './JoinPage.module.css';
@@ -77,11 +78,14 @@ function JoinedView() {
             <div className={styles.dots}><span /><span /><span /></div>
           </>
         )}
-        <button className={styles.backBtn} onClick={() => {
-          if (sessionCode && joinedIds.length) leaveSession(sessionCode, joinedIds).catch(() => {});
-          localStorage.removeItem('foringi_joined');
-          clearSession();
-        }}>Leave</button>
+        <div className={styles.bottomRow}>
+          <button className={styles.backBtn} onClick={() => {
+            if (sessionCode && joinedIds.length) leaveSession(sessionCode, joinedIds).catch(() => {});
+            localStorage.removeItem('foringi_joined');
+            clearSession();
+          }}>Leave</button>
+          <GuideButton />
+        </div>
       </div>
     </div>
   );
@@ -234,7 +238,10 @@ export function JoinPage() {
         </form>
 
         {error && <p className={styles.error}>{error}</p>}
-        <button className={styles.backBtn} onClick={clearSession}>Back</button>
+        <div className={styles.bottomRow}>
+          <button className={styles.backBtn} onClick={clearSession}>Back</button>
+          <GuideButton />
+        </div>
       </div>
     </div>
   );

@@ -1,0 +1,153 @@
+.trigger {
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.trigger:hover {
+  color: var(--accent-light);
+  border-color: var(--accent-light);
+  transform: none;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2000;
+}
+
+.modal {
+  position: fixed;
+  top: 5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2001;
+  background: var(--bg-sidebar);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius);
+  max-width: 640px;
+  width: calc(100% - 32px);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-dark);
+  flex-shrink: 0;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--accent-light);
+}
+
+.close {
+  background: none;
+  color: var(--text-muted);
+  font-size: 1.4rem;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close:hover {
+  color: var(--text);
+  transform: none;
+}
+
+.body {
+  padding: 20px;
+  overflow-y: auto;
+  color: var(--text);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.body h1 {
+  font-size: 1.3rem;
+  color: var(--accent-light);
+  margin: 0 0 12px;
+}
+
+.body h2 {
+  font-size: 1.1rem;
+  color: var(--accent-light);
+  margin: 24px 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.body h3 {
+  font-size: 0.95rem;
+  color: var(--text);
+  margin: 16px 0 6px;
+}
+
+.body p {
+  margin: 0 0 10px;
+  color: var(--text-muted);
+}
+
+.body ul, .body ol {
+  margin: 0 0 10px;
+  padding-left: 20px;
+  color: var(--text-muted);
+}
+
+.body li {
+  margin-bottom: 4px;
+}
+
+.body strong {
+  color: var(--text);
+}
+
+.body code {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+
+.body a {
+  color: var(--accent-light);
+  text-decoration: underline;
+}
+
+.body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 12px;
+  font-size: 0.8rem;
+}
+
+.body th, .body td {
+  padding: 6px 10px;
+  border: 1px solid var(--border-dark);
+  text-align: left;
+}
+
+.body th {
+  background: rgba(255, 255, 255, 0.06);
+  font-weight: 700;
+  color: var(--text);
+}
+
+.body td {
+  color: var(--text-muted);
+}
