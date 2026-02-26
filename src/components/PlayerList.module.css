@@ -8,6 +8,26 @@
   font-size: 1.1rem;
 }
 
+.search {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input, #1a1a2e);
+  color: var(--text);
+  margin-bottom: 8px;
+  outline: none;
+}
+
+.search::placeholder {
+  color: var(--text-muted);
+}
+
+.search:focus {
+  border-color: var(--accent);
+}
+
 .list {
   max-height: 22rem;
   overflow-y: auto;
