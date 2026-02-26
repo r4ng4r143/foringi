@@ -37,7 +37,7 @@ export const DEFAULT_WEIGHTS: HeuristicWeights = {
   powerDiff: 1.5,
   blacklist: 100,
   emptySeat: 10,
-  unseated: 1,
+  unseated: 30,
   playHistory: 3,
   powerDiversity: 40,
 };

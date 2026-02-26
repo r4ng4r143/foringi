@@ -13,8 +13,8 @@ describe('runSearch', () => {
       const solutions = runSearch(players, 'astar');
       expect(solutions.length).toBeGreaterThan(0);
       const seated = solutions[0].seatings.flat();
-      // Goal allows max(4, ceil(8*0.25))=4 unseated, so at least 4 seated
-      expect(seated.length).toBeGreaterThanOrEqual(4);
+      // ceil(8*0.1)=1 max unseated, so at least 7 seated
+      expect(seated.length).toBeGreaterThanOrEqual(7);
     });
 
     it('seats 12 players with most seated', () => {
@@ -22,8 +22,8 @@ describe('runSearch', () => {
       const solutions = runSearch(players, 'astar');
       expect(solutions.length).toBeGreaterThan(0);
       const seated = solutions[0].seatings.flat();
-      // Goal allows max(4, ceil(12*0.25))=4 unseated, so at least 8 seated
-      expect(seated.length).toBeGreaterThanOrEqual(8);
+      // ceil(12*0.1)=2 max unseated, so at least 10 seated
+      expect(seated.length).toBeGreaterThanOrEqual(10);
     });
 
     it('groups same-power players together', () => {
@@ -142,7 +142,7 @@ describe('runSearch', () => {
       const solutions = runSearch(players, 'astar');
       expect(solutions.length).toBeGreaterThan(0);
       const seated = solutions[0].seatings.flat();
-      expect(seated.length).toBeGreaterThanOrEqual(4);
+      expect(seated.length).toBeGreaterThanOrEqual(7);
     });
   });
 });

@@ -25,7 +25,7 @@ export class Environment {
 
   isGoalState(state: State): boolean {
     const total = this.playersList.length;
-    const maxUnsorted = Math.max(4, Math.ceil(total * 0.25));
+    const maxUnsorted = Math.ceil(total * 0.1);
     return state.playersLeft.size <= maxUnsorted;
   }
 

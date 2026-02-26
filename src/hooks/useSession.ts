@@ -16,12 +16,12 @@ export function useSessionPolling() {
       suppressSync(() => {
         loadPlayers(data.players, data.nextPlayerId);
         loadGroups(data.groups, data.nextGroupId);
+        if (data.solution) {
+          useStore.getState().setSolution(data.solution);
+        }
       });
       setSessionName(data.name);
       setTableCount(data.tableCount);
-      if (data.solution) {
-        useStore.getState().setSolution(data.solution);
-      }
     } catch (err) {
       console.error('Poll failed:', err);
     }

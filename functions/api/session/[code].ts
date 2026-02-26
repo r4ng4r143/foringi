@@ -36,6 +36,7 @@ export const onRequestPatch: PagesFunction<Env> = async ({ env, params, request 
   if (typeof body.nextPlayerId === 'number') session.nextPlayerId = body.nextPlayerId;
   if (body.groups !== undefined) session.groups = body.groups;
   if (typeof body.nextGroupId === 'number') session.nextGroupId = body.nextGroupId;
+  if (body.solution !== undefined) session.solution = body.solution;
 
   await env.SESSIONS.put(code, JSON.stringify(session), { expirationTtl: 86400 });
   return new Response(null, { status: 204 });

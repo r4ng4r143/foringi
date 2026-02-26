@@ -233,9 +233,9 @@ function scheduleSyncToKV() {
   if (!sessionCode || !hostToken) return;
   if (syncTimer) clearTimeout(syncTimer);
   syncTimer = setTimeout(() => {
-    const { players, nextPlayerId, groups, nextGroupId, sessionCode: code, hostToken: token } = useStore.getState();
+    const { players, nextPlayerId, groups, nextGroupId, solution, sessionCode: code, hostToken: token } = useStore.getState();
     if (!code || !token) return;
-    patchSession(code, token, { players, nextPlayerId, groups, nextGroupId }).catch(console.error);
+    patchSession(code, token, { players, nextPlayerId, groups, nextGroupId, solution }).catch(console.error);
   }, 500);
 }
 
@@ -247,7 +247,7 @@ export function suppressSync(fn: () => void) {
 
 useStore.subscribe(
   (state, prev) => {
-    if (state.players !== prev.players || state.groups !== prev.groups) {
+    if (state.players !== prev.players || state.groups !== prev.groups || state.solution !== prev.solution) {
       scheduleSyncToKV();
     }
   },

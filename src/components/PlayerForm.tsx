@@ -6,11 +6,9 @@ import styles from './PlayerForm.module.css';
 const ALL_BRACKETS = [Bracket.EXHIBITION, Bracket.CORE, Bracket.UPGRADED, Bracket.OPTIMIZED, Bracket.CEDH];
 
 function tapBracket(min: number, max: number, b: number): [number, number] {
-  if (min === max && min === b) return [b, b];
   if (b < min) return [b, max];
   if (b > max) return [min, b];
-  if (b - min <= max - b) return [b, max];
-  return [min, b];
+  return [b, b];
 }
 
 export function PlayerForm() {

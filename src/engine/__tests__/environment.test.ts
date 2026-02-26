@@ -50,27 +50,29 @@ describe('Environment', () => {
       expect(env.isGoalState(state)).toBe(true);
     });
 
-    it('allows up to 25% unseated for large groups', () => {
+    it('allows up to 10% unseated for large groups', () => {
       const env = new Environment(makePlayers(20));
-      // 25% of 20 = 5 allowed unseated
-      expect(env.isGoalState(new State(env.tables, [0, 1, 2, 3, 4]))).toBe(true);
+      // ceil(20*0.1) = 2 allowed unseated
+      expect(env.isGoalState(new State(env.tables, [0, 1]))).toBe(true);
     });
 
-    it('minimum 4 unseated threshold for small groups', () => {
+    it('8 players: allows at most 1 unseated', () => {
       const env = new Environment(makePlayers(8));
-      // max(4, ceil(8*0.25)) = 4
-      expect(env.isGoalState(new State(env.tables, [0, 1, 2, 3]))).toBe(true);
+      // ceil(8*0.1) = 1
+      expect(env.isGoalState(new State(env.tables, [0]))).toBe(true);
+      expect(env.isGoalState(new State(env.tables, [0, 1]))).toBe(false);
     });
 
     it('rejects too many unseated', () => {
       const env = new Environment(makePlayers(8));
-      expect(env.isGoalState(new State(env.tables, [0, 1, 2, 3, 4]))).toBe(false);
+      expect(env.isGoalState(new State(env.tables, [0, 1, 2, 3]))).toBe(false);
     });
 
-    it('3 players: goal reached with all unseated', () => {
+    it('3 players: allows 1 unseated', () => {
       const env = new Environment(makePlayers(3));
-      // max(4, ceil(3*0.25)) = 4, and 3 <= 4
-      expect(env.isGoalState(new State(env.tables, [0, 1, 2]))).toBe(true);
+      // ceil(3*0.1) = 1
+      expect(env.isGoalState(new State(env.tables, [0]))).toBe(true);
+      expect(env.isGoalState(new State(env.tables, [0, 1]))).toBe(false);
     });
   });
 
