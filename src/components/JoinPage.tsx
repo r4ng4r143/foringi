@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, type FormEvent } from 'react';
 import { useStore } from '../store/store';
-import { joinSession, getSession } from '../api/client';
+import { joinSession, getSession, leaveSession } from '../api/client';
 import { Bracket, BRACKET_LABELS } from '../engine/types';
 import type { PlayerData, SolutionData } from '../engine/types';
 import styles from './JoinPage.module.css';
@@ -71,7 +71,11 @@ function JoinedView() {
             <div className={styles.dots}><span /><span /><span /></div>
           </>
         )}
-        <button className={styles.backBtn} onClick={() => { sessionStorage.removeItem('foringi_joined'); clearSession(); }}>Leave</button>
+        <button className={styles.backBtn} onClick={() => {
+          if (sessionCode && joinedIds.length) leaveSession(sessionCode, joinedIds).catch(() => {});
+          sessionStorage.removeItem('foringi_joined');
+          clearSession();
+        }}>Leave</button>
       </div>
     </div>
   );
@@ -79,7 +83,15 @@ function JoinedView() {
 
 interface PlayerEntry {
   name: string;
-  brackets: number[];
+  range: [number, number];
+}
+
+function tapBracket(min: number, max: number, b: number): [number, number] {
+  if (min === max && min === b) return [b, b];
+  if (b < min) return [b, max];
+  if (b > max) return [min, b];
+  if (b - min <= max - b) return [b, max];
+  return [min, b];
 }
 
 export function JoinPage() {
@@ -88,7 +100,7 @@ export function JoinPage() {
   const sessionName = useStore(s => s.sessionName);
   const clearSession = useStore(s => s.clearSession);
 
-  const [entries, setEntries] = useState<PlayerEntry[]>([{ name: '', brackets: [Bracket.CORE] }]);
+  const [entries, setEntries] = useState<PlayerEntry[]>([{ name: '', range: [Bracket.CORE, Bracket.CORE] }]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -100,18 +112,16 @@ export function JoinPage() {
     setEntries(prev => prev.map((e, j) => j === i ? { ...e, name } : e));
   };
 
-  const toggleBracket = (i: number, b: number) => {
+  const handleTapBracket = (i: number, b: number) => {
     setEntries(prev => prev.map((e, j) => {
       if (j !== i) return e;
-      const has = e.brackets.includes(b);
-      const next = has ? e.brackets.filter(x => x !== b) : [...e.brackets, b].sort();
-      return { ...e, brackets: next };
+      return { ...e, range: tapBracket(e.range[0], e.range[1], b) };
     }));
   };
 
   const addFriend = () => {
     if (entries.length >= 4) return;
-    setEntries(prev => [...prev, { name: '', brackets: [Bracket.CORE] }]);
+    setEntries(prev => [...prev, { name: '', range: [Bracket.CORE, Bracket.CORE] }]);
   };
 
   const removeFriend = (i: number) => {
@@ -123,14 +133,17 @@ export function JoinPage() {
     e.preventDefault();
     if (!sessionCode) return;
 
-    const valid = entries.filter(p => p.name.trim() && p.brackets.length > 0);
+    const valid = entries.filter(p => p.name.trim());
     if (valid.length === 0) return;
 
     setLoading(true);
     setError('');
     try {
       const res = await joinSession(sessionCode, {
-        players: valid.map(p => ({ name: p.name.trim(), powers: p.brackets })),
+        players: valid.map(p => ({
+          name: p.name.trim(),
+          powers: Array.from({ length: p.range[1] - p.range[0] + 1 }, (_, i) => p.range[0] + i),
+        })),
       });
       useStore.getState().setJoinedPlayerIds(res.playerIds);
       sessionStorage.setItem('foringi_joined', JSON.stringify({ code: sessionCode, playerIds: res.playerIds }));
@@ -174,8 +187,8 @@ export function JoinPage() {
                   <button
                     key={b}
                     type="button"
-                    className={`${styles.bracketBtn} ${styles[`b${b}`]} ${entry.brackets.includes(b) ? styles.selected : ''}`}
-                    onClick={() => toggleBracket(i, b)}
+                    className={`${styles.bracketBtn} ${styles[`b${b}`]} ${b >= entry.range[0] && b <= entry.range[1] ? styles.selected : ''}`}
+                    onClick={() => handleTapBracket(i, b)}
                   >
                     <span className={styles.bracketNum}>{b}</span>
                     <span className={styles.bracketLabel}>{BRACKET_LABELS[b]}</span>
@@ -194,7 +207,7 @@ export function JoinPage() {
           <button
             type="submit"
             className={styles.submitBtn}
-            disabled={loading || !entries.some(e => e.name.trim() && e.brackets.length > 0)}
+            disabled={loading || !entries.some(e => e.name.trim())}
           >
             {loading ? 'Joining...' : 'Sign Up'}
           </button>

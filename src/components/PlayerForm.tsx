@@ -5,22 +5,24 @@ import styles from './PlayerForm.module.css';
 
 const ALL_BRACKETS = [Bracket.EXHIBITION, Bracket.CORE, Bracket.UPGRADED, Bracket.OPTIMIZED, Bracket.CEDH];
 
+function tapBracket(min: number, max: number, b: number): [number, number] {
+  if (min === max && min === b) return [b, b];
+  if (b < min) return [b, max];
+  if (b > max) return [min, b];
+  if (b - min <= max - b) return [b, max];
+  return [min, b];
+}
+
 export function PlayerForm() {
   const addPlayer = useStore(s => s.addPlayer);
   const [name, setName] = useState('');
-  const [brackets, setBrackets] = useState<number[]>([Bracket.CORE]);
-
-  const toggleBracket = (b: number) => {
-    setBrackets(prev => {
-      const has = prev.includes(b);
-      return has ? prev.filter(x => x !== b) : [...prev, b].sort();
-    });
-  };
+  const [range, setRange] = useState<[number, number]>([Bracket.CORE, Bracket.CORE]);
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const trimmed = name.trim();
-    if (!trimmed || brackets.length === 0) return;
+    if (!trimmed) return;
+    const brackets = Array.from({ length: range[1] - range[0] + 1 }, (_, i) => range[0] + i);
     addPlayer(trimmed, brackets);
     setName('');
   };
@@ -42,8 +44,8 @@ export function PlayerForm() {
           <button
             key={b}
             type="button"
-            className={`${styles.bracketBtn} ${styles[`b${b}`]} ${brackets.includes(b) ? styles.selected : ''}`}
-            onClick={() => toggleBracket(b)}
+            className={`${styles.bracketBtn} ${styles[`b${b}`]} ${b >= range[0] && b <= range[1] ? styles.selected : ''}`}
+            onClick={() => setRange(tapBracket(range[0], range[1], b))}
           >
             <span className={styles.num}>{b}</span>
             <span className={styles.label}>{BRACKET_LABELS[b]}</span>
