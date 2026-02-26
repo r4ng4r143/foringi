@@ -26,6 +26,18 @@
   color: var(--text);
 }
 
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.podScore {
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
 .count {
   font-size: 0.75rem;
   color: var(--text-muted);

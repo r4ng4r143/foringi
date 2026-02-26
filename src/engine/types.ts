@@ -71,6 +71,7 @@ export interface GroupData {
 export interface SolutionData {
   seatings: number[][];
   score: number;
+  podScores?: number[];
 }
 
 // --- Engine classes (used inside the search algorithm) ---

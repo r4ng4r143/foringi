@@ -192,7 +192,7 @@ export const useStore = create<ForingiStore>((set) => ({
     const seatings = s.solution.seatings.map(pod => [...pod]);
     seatings[fromPod] = seatings[fromPod].filter(id => id !== playerId);
     seatings[toPod].push(playerId);
-    return { solution: { ...s.solution, seatings } };
+    return { solution: { ...s.solution, seatings, podScores: undefined } };
   }),
 
   swapPlayers: (aId, bId) => set(s => {
@@ -210,7 +210,7 @@ export const useStore = create<ForingiStore>((set) => ({
       seatings[aPod] = seatings[aPod].map(id => id === aId ? bId : id);
       seatings[bPod] = seatings[bPod].map(id => id === bId ? aId : id);
     }
-    return { solution: { ...s.solution, seatings } };
+    return { solution: { ...s.solution, seatings, podScores: undefined } };
   }),
 
   joinedPlayerIds: [],

@@ -52,9 +52,18 @@ export class Agent {
     this.search(onProgress);
     return this.solutions.map(s => {
       if ('getSeats' in s) {
-        return { seatings: (s as State).getSeats(), score: this.heuristic.evalState(s as State) };
+        const seatings = (s as State).getSeats();
+        return {
+          seatings,
+          score: this.heuristic.evalState(s as State),
+          podScores: seatings.map(pod => this.heuristic.evalPod(pod)),
+        };
       }
-      return s as SolutionData;
+      const sol = s as SolutionData;
+      if (!sol.podScores) {
+        sol.podScores = sol.seatings.map(pod => this.heuristic.evalPod(pod));
+      }
+      return sol;
     });
   }
 
@@ -347,7 +356,7 @@ function generateFallbackSolution(
   const st = new State(tblObjs, []);
   const score = h.evalState(st);
 
-  return { seatings: nonEmpty, score };
+  return { seatings: nonEmpty, score, podScores: nonEmpty.map(pod => h.evalPod(pod)) };
 }
 
 // --- Top-level search entry point ---
@@ -413,8 +422,10 @@ export function runSearch(
 
   // Prepend locked pods to every solution
   if (lockedPods.length > 0) {
+    const lockedScores = lockedPods.map(pod => heuristic.evalPod(pod));
     for (const sol of engineSolutions) {
       sol.seatings = [...lockedPods, ...sol.seatings];
+      sol.podScores = [...lockedScores, ...(sol.podScores ?? [])];
     }
   }
 

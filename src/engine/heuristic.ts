@@ -103,6 +103,70 @@ export class Heuristic {
     return score;
   }
 
+  evalPod(pids: number[]): number {
+    if (pids.length === 0) return 0;
+
+    let score = (MAXSEATS - pids.length) * this.weights.emptySeat;
+    let powerImbalanceCount = 0;
+    let powerDiffCount = 0;
+    let blacklistCount = 0;
+    let historyPenalty = 0;
+    let powerDiversityPenalty = 0;
+
+    for (let j = 0; j < pids.length; j++) {
+      for (let k = j + 1; k < pids.length; k++) {
+        const h1 = this.playHistory[pids[j]];
+        if (h1 && h1[pids[k]]) historyPenalty += h1[pids[k]];
+      }
+    }
+
+    const levelsAtTable = new Set<number>();
+    const playerPowers = new Map<number, number>();
+    for (const pid of pids) {
+      const p = this.players[pid];
+      if (!p) continue;
+      let highest = 0;
+      for (const pw of p.power) {
+        if (pw > highest) highest = pw;
+        levelsAtTable.add(pw);
+      }
+      playerPowers.set(pid, highest);
+    }
+    if (levelsAtTable.size > 1) {
+      powerDiversityPenalty += (levelsAtTable.size - 1) * this.weights.powerDiversity;
+    }
+    if (pids.length > 1) {
+      const vals = Array.from(playerPowers.values());
+      const diff = Math.max(...vals) - Math.min(...vals);
+      if (diff > 0) powerDiversityPenalty += diff * this.weights.powerDiversity;
+    }
+
+    for (let j = 0; j < pids.length; j++) {
+      const pj = this.players[pids[j]];
+      if (!pj) continue;
+      for (const blId of pj.blacklist) {
+        if (pids.includes(blId)) { blacklistCount++; break; }
+      }
+      for (let k = 0; k < pids.length; k++) {
+        if (j === k) continue;
+        const pk = this.players[pids[k]];
+        if (!pk) continue;
+        if (pj.lowestPower < pk.lowestPower) powerImbalanceCount++;
+        for (const pw of pk.power) {
+          if (!pj.power.has(pw)) powerDiffCount++;
+        }
+      }
+    }
+
+    score += powerImbalanceCount * this.weights.powerImbalance;
+    score += powerDiffCount * this.weights.powerDiff;
+    score += blacklistCount * this.weights.blacklist;
+    score += historyPenalty * this.weights.playHistory;
+    score += powerDiversityPenalty;
+
+    return score;
+  }
+
   getPlayCount(pid1: number, pid2: number): number {
     return this.playHistory[pid1]?.[pid2] ?? this.playHistory[pid2]?.[pid1] ?? 0;
   }

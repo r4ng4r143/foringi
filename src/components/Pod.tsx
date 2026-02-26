@@ -8,9 +8,16 @@ import styles from './Pod.module.css';
 interface PodProps {
   podIndex: number;
   playerIds: number[];
+  podScore?: number;
 }
 
-export function Pod({ podIndex, playerIds }: PodProps) {
+function scoreColor(score: number): string {
+  if (score <= 20) return 'var(--whitelist)';
+  if (score <= 80) return 'var(--accent-light)';
+  return 'var(--blacklist)';
+}
+
+export function Pod({ podIndex, playerIds, podScore }: PodProps) {
   const { setNodeRef, isOver } = useDroppable({ id: `pod-${podIndex}` });
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
@@ -21,7 +28,14 @@ export function Pod({ podIndex, playerIds }: PodProps) {
     >
       <div className={styles.header}>
         <span className={styles.num}>Table {podIndex + 1}</span>
-        <span className={styles.count}>{playerIds.length}/4</span>
+        <span className={styles.headerRight}>
+          {podScore != null && (
+            <span className={styles.podScore} style={{ color: scoreColor(podScore) }}>
+              {podScore.toFixed(0)}
+            </span>
+          )}
+          <span className={styles.count}>{playerIds.length}/4</span>
+        </span>
       </div>
       <div className={styles.seats}>
         {playerIds.map(pid => (

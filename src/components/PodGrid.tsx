@@ -60,7 +60,7 @@ export function PodGrid() {
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className={styles.grid}>
           {solution.seatings.map((playerIds, i) => (
-            <Pod key={i} podIndex={i} playerIds={playerIds} />
+            <Pod key={i} podIndex={i} playerIds={playerIds} podScore={solution.podScores?.[i]} />
           ))}
         </div>
         <DragOverlay>
