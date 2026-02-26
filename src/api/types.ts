@@ -31,13 +31,20 @@ export interface JoinSessionResponse {
   playerIds: number[];
 }
 
+export interface SessionEvent {
+  type: 'join' | 'leave' | 'cooked';
+  names?: string[];
+  ts: number;
+}
+
 export interface SessionStateResponse {
   name: string;
-  tableCount: number;
+  tableCount?: number;
   players: Record<number, PlayerData>;
-  nextPlayerId: number;
-  groups: Record<number, GroupData>;
-  nextGroupId: number;
+  nextPlayerId?: number;
+  groups?: Record<number, GroupData>;
+  nextGroupId?: number;
   solution: SolutionData | null;
   playerCount: number;
+  eventLog?: SessionEvent[];
 }

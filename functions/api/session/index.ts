@@ -33,6 +33,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
     groups: {},
     nextGroupId: 0,
     solution: null,
+    eventLog: [],
     createdAt: Date.now(),
   };
 

@@ -1,21 +1,38 @@
 interface Env { SESSIONS: KVNamespace }
 
-export const onRequestGet: PagesFunction<Env> = async ({ env, params }) => {
+export const onRequestGet: PagesFunction<Env> = async ({ env, params, request }) => {
   const code = String(params.code).toUpperCase();
   const raw = await env.SESSIONS.get(code);
   if (!raw) return new Response('Session not found', { status: 404 });
 
   const session = JSON.parse(raw);
+  const hostToken = request.headers.get('X-Host-Token');
+  const isHost = hostToken === session.hostToken;
+
+  if (isHost) {
+    return Response.json({
+      name: session.name,
+      tableCount: session.tableCount,
+      players: session.players,
+      nextPlayerId: session.nextPlayerId,
+      groups: session.groups,
+      nextGroupId: session.nextGroupId,
+      solution: session.solution,
+      playerCount: Object.keys(session.players).length,
+      eventLog: session.eventLog ?? [],
+    });
+  }
+
+  const strippedPlayers: Record<string, { id: number; name: string }> = {};
+  for (const [id, p] of Object.entries(session.players) as [string, any][]) {
+    strippedPlayers[id] = { id: p.id, name: p.name };
+  }
 
   return Response.json({
     name: session.name,
-    tableCount: session.tableCount,
-    players: session.players,
-    nextPlayerId: session.nextPlayerId,
-    groups: session.groups,
-    nextGroupId: session.nextGroupId,
-    solution: session.solution,
     playerCount: Object.keys(session.players).length,
+    players: strippedPlayers,
+    solution: session.solution ? { seatings: session.solution.seatings } : null,
   });
 };
 

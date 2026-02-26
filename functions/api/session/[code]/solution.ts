@@ -19,6 +19,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, params, request }
 
   session.solution = { seatings: solution.seatings, score: solution.score ?? 0 };
 
+  if (!session.eventLog) session.eventLog = [];
+  session.eventLog.push({ type: 'cooked', ts: Date.now() });
+
   await env.SESSIONS.put(code, JSON.stringify(session), { expirationTtl: 86400 });
 
   return new Response(null, { status: 204 });

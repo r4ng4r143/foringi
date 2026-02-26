@@ -12,8 +12,10 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, params, request }
     return new Response('playerIds required', { status: 400 });
   }
 
+  const leftNames: string[] = [];
   for (const pid of body.playerIds) {
     if (!(pid in session.players)) continue;
+    leftNames.push(session.players[pid].name);
     delete session.players[pid];
 
     for (const p of Object.values(session.players) as any[]) {
@@ -22,6 +24,11 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, params, request }
     for (const g of Object.values(session.groups) as any[]) {
       g.memberIds = g.memberIds.filter((x: number) => x !== pid);
     }
+  }
+
+  if (leftNames.length > 0) {
+    if (!session.eventLog) session.eventLog = [];
+    session.eventLog.push({ type: 'leave', names: leftNames, ts: Date.now() });
   }
 
   await env.SESSIONS.put(code, JSON.stringify(session), { expirationTtl: 86400 });

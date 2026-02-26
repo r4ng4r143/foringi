@@ -47,6 +47,10 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, params, request }
     };
   }
 
+  const names = playerIds.map(id => session.players[id].name);
+  if (!session.eventLog) session.eventLog = [];
+  session.eventLog.push({ type: 'join', names, ts: Date.now() });
+
   await env.SESSIONS.put(code, JSON.stringify(session), { expirationTtl: 86400 });
 
   return Response.json({ playerIds });
