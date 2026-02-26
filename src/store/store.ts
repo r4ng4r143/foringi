@@ -46,6 +46,8 @@ interface ForingiStore {
   movePlayer: (playerId: number, fromPod: number, toPod: number) => void;
   unseatPlayer: (playerId: number, fromPod: number) => void;
   swapPlayers: (aId: number, bId: number) => void;
+  focusPodIndex: number | null;
+  setFocusPod: (index: number | null) => void;
 
   // --- Player join (client-side) ---
   joinedPlayerIds: number[];
@@ -227,6 +229,9 @@ export const useStore = create<ForingiStore>((set) => ({
     }
     return { solution: { ...s.solution, seatings, podScores: undefined } };
   }),
+
+  focusPodIndex: null,
+  setFocusPod: (index) => set({ focusPodIndex: index }),
 
   joinedPlayerIds: [],
   setJoinedPlayerIds: (ids) => set({ joinedPlayerIds: ids }),

@@ -33,6 +33,22 @@
   white-space: nowrap;
 }
 
+.tableBadge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: var(--whitelist, #48bb78);
+  color: #111;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.tableBadge:hover {
+  opacity: 0.85;
+  transform: none;
+}
+
 .badges {
   display: flex;
   gap: 3px;

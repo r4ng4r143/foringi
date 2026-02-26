@@ -1,5 +1,5 @@
 import { useDroppable, useDraggable } from '@dnd-kit/core';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useStore } from '../store/store';
 import { BracketRange } from './PowerBadge';
 import { BRACKET_LABELS } from '../engine/types';
@@ -95,10 +95,21 @@ export function Pod({ podIndex, playerIds, podScore }: PodProps) {
   const { setNodeRef, isOver } = useDroppable({ id: `pod-${podIndex}` });
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const focusPodIndex = useStore(s => s.focusPodIndex);
+  const setFocusPod = useStore(s => s.setFocusPod);
+  const podRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (focusPodIndex === podIndex) {
+      podRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setShowModal(true);
+      setFocusPod(null);
+    }
+  }, [focusPodIndex, podIndex, setFocusPod]);
 
   return (
     <div
-      ref={setNodeRef}
+      ref={(node) => { setNodeRef(node); (podRef as React.MutableRefObject<HTMLDivElement | null>).current = node; }}
       className={`${styles.pod} ${isOver ? styles.over : ''}`}
     >
       <div className={styles.header} onClick={() => setShowModal(true)} style={{ cursor: 'pointer' }}>
