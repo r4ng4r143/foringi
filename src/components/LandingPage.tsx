@@ -7,9 +7,6 @@ export function LandingPage() {
   const setView = useStore(s => s.setView);
   const setSession = useStore(s => s.setSession);
   const setSessionName = useStore(s => s.setSessionName);
-  const setTableCount = useStore(s => s.setTableCount);
-  const loadPlayers = useStore(s => s.loadPlayers);
-  const loadGroups = useStore(s => s.loadGroups);
 
   const [name, setName] = useState('Commander Night');
   const [joinCode, setJoinCode] = useState('');
@@ -41,9 +38,6 @@ export function LandingPage() {
       const data = await getSession(code);
       setSession(code, null);
       setSessionName(data.name);
-      setTableCount(data.tableCount);
-      loadPlayers(data.players, data.nextPlayerId);
-      loadGroups(data.groups, data.nextGroupId);
       setView('join');
     } catch {
       setError('Session not found. Check the code and try again.');

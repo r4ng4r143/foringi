@@ -29,9 +29,9 @@ function useRouteRestore() {
         const s = useStore.getState();
         s.setSession(code, token);
         s.setSessionName(data.name);
-        s.setTableCount(data.tableCount);
-        s.loadPlayers(data.players, data.nextPlayerId);
-        s.loadGroups(data.groups, data.nextGroupId);
+        if (data.tableCount != null) s.setTableCount(data.tableCount);
+        if (data.nextPlayerId != null) s.loadPlayers(data.players, data.nextPlayerId);
+        if (data.groups && data.nextGroupId != null) s.loadGroups(data.groups, data.nextGroupId);
         s.setView('host');
       }).catch(() => {
         history.replaceState(null, '', '/');
@@ -63,9 +63,6 @@ function useRouteRestore() {
         const s = useStore.getState();
         s.setSession(code, null);
         s.setSessionName(data.name);
-        s.setTableCount(data.tableCount);
-        s.loadPlayers(data.players, data.nextPlayerId);
-        s.loadGroups(data.groups, data.nextGroupId);
         s.setView('join');
       }).catch(() => {});
       history.replaceState(null, '', '/');
