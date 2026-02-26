@@ -219,7 +219,7 @@ export function JoinPage() {
                 <span className={styles.toggleThumb} />
               </span>
               <span className={styles.toggleLabel}>
-                {strictGroup ? 'Must sit together' : 'Prefer together, okay apart'}
+                {strictGroup ? 'STRICT: Must sit together' : 'FLEXIBLE: Prefer together, okay apart'}
               </span>
             </label>
           )}

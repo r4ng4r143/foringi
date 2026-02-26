@@ -66,7 +66,7 @@ function GroupCard({ group }: { group: GroupData }) {
           <span className={styles.strictThumb} />
         </span>
         <span className={styles.strictLabel}>
-          {isStrict ? 'Must sit together' : 'Prefer together'}
+          {isStrict ? 'STRICT: Must sit together' : 'FLEXIBLE: Prefer together'}
         </span>
       </div>
 
