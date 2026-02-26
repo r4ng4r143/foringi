@@ -6,6 +6,8 @@ import { GroupPanel } from './GroupPanel';
 import { ActionBar } from './ActionBar';
 import { PodGrid } from './PodGrid';
 import { GuideButton } from './GuideModal';
+import { InfoPopup } from './InfoPopup';
+import aboutMd from '../content/about.md?raw';
 import { useSessionPolling } from '../hooks/useSession';
 import type { SessionEvent } from '../api/types';
 import styles from './HostDashboard.module.css';
@@ -84,6 +86,7 @@ export function HostDashboard() {
           <h2 className={styles.title}>FORINGI</h2>
           <div className={styles.headerActions}>
             <GuideButton className={styles.guideBtn} />
+            <InfoPopup label="About" title="About Foringi" markdown={aboutMd} />
             <ActivityLog events={eventLog} unread={unreadCount} onOpen={markRead} />
           </div>
         </div>
