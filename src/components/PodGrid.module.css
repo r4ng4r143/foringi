@@ -44,6 +44,32 @@
   border-radius: var(--radius-sm);
 }
 
+.trash {
+  margin-top: 16px;
+  padding: 14px;
+  border: 2px dashed var(--border-dark);
+  border-radius: var(--radius);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.trashIcon {
+  font-size: 1.2rem;
+}
+
+.trashOver {
+  border-color: var(--blacklist);
+  background: rgba(245, 101, 101, 0.1);
+  color: var(--blacklist);
+}
+
 .overlay {
   background: #fff;
   padding: 8px 14px;

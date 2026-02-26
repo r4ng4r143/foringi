@@ -1,14 +1,25 @@
-import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors, DragOverlay } from '@dnd-kit/core';
+import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors, DragOverlay, useDroppable } from '@dnd-kit/core';
 import { useState } from 'react';
 import { useStore } from '../store/store';
 import { Pod } from './Pod';
 import { BracketRange } from './PowerBadge';
 import styles from './PodGrid.module.css';
 
+function TrashZone() {
+  const { setNodeRef, isOver } = useDroppable({ id: 'trash' });
+  return (
+    <div ref={setNodeRef} className={`${styles.trash} ${isOver ? styles.trashOver : ''}`}>
+      <span className={styles.trashIcon}>&#128465;</span>
+      <span>Remove from pod</span>
+    </div>
+  );
+}
+
 export function PodGrid() {
   const solution = useStore(s => s.solution);
   const players = useStore(s => s.players);
   const movePlayer = useStore(s => s.movePlayer);
+  const unseatPlayer = useStore(s => s.unseatPlayer);
   const tableCount = useStore(s => s.tableCount);
   const [activeId, setActiveId] = useState<number | null>(null);
 
@@ -27,6 +38,12 @@ export function PodGrid() {
     const playerId = active.data.current?.playerId as number | undefined;
     const fromPod = active.data.current?.fromPod as number | undefined;
     if (playerId === undefined || fromPod === undefined) return;
+
+    if (String(over.id) === 'trash') {
+      unseatPlayer(playerId, fromPod);
+      return;
+    }
+
     const overIdStr = String(over.id);
     if (!overIdStr.startsWith('pod-')) return;
     const toPod = parseInt(overIdStr.replace('pod-', ''), 10);
@@ -63,6 +80,7 @@ export function PodGrid() {
             <Pod key={i} podIndex={i} playerIds={playerIds} podScore={solution.podScores?.[i]} />
           ))}
         </div>
+        {activeId != null && <TrashZone />}
         <DragOverlay>
           {activePlayer && (
             <div className={styles.overlay}>

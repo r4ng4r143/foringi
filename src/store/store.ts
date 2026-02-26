@@ -44,6 +44,7 @@ interface ForingiStore {
   setSolution: (solution: SolutionData) => void;
   clearSolution: () => void;
   movePlayer: (playerId: number, fromPod: number, toPod: number) => void;
+  unseatPlayer: (playerId: number, fromPod: number) => void;
   swapPlayers: (aId: number, bId: number) => void;
 
   // --- Player join (client-side) ---
@@ -199,6 +200,13 @@ export const useStore = create<ForingiStore>((set) => ({
     const seatings = s.solution.seatings.map(pod => [...pod]);
     seatings[fromPod] = seatings[fromPod].filter(id => id !== playerId);
     seatings[toPod].push(playerId);
+    return { solution: { ...s.solution, seatings, podScores: undefined } };
+  }),
+
+  unseatPlayer: (playerId, fromPod) => set(s => {
+    if (!s.solution) return s;
+    const seatings = s.solution.seatings.map(pod => [...pod]);
+    seatings[fromPod] = seatings[fromPod].filter(id => id !== playerId);
     return { solution: { ...s.solution, seatings, podScores: undefined } };
   }),
 
