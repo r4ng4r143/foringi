@@ -118,16 +118,20 @@
   opacity: 0.9;
 }
 
-.bracketBtn.selected {
-  border-color: #fff;
-  transform: none;
-}
-
 .b1 { background: var(--bracket-1); color: #333; }
 .b2 { background: var(--bracket-2); color: #333; }
 .b3 { background: var(--bracket-3); color: #333; }
 .b4 { background: var(--bracket-4); color: #fff; }
 .b5 { background: var(--bracket-5); color: #fff; }
+
+.bracketBtn:not(.selected) {
+  opacity: 0.3;
+}
+
+.bracketBtn.selected {
+  border-color: #fff;
+  transform: none;
+}
 
 .bracketNum {
   font-size: 1.1rem;
