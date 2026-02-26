@@ -49,6 +49,13 @@ export async function postSolution(code: string, hostToken: string, solution: So
   });
 }
 
+export async function removePlayerFromSession(code: string, hostToken: string, playerId: number): Promise<void> {
+  await request<void>(`${API_BASE}/${code}/player/${playerId}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', 'X-Host-Token': hostToken },
+  });
+}
+
 export async function deleteSession(code: string, hostToken: string): Promise<void> {
   await request<void>(`${API_BASE}/${code}`, {
     method: 'DELETE',

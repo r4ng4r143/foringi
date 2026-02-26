@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { PlayerData, GroupData, SolutionData, SearchProgress } from '../engine/types';
+import { removePlayerFromSession } from '../api/client';
 
 export type AppView = 'landing' | 'host' | 'join' | 'joined';
 
@@ -79,19 +80,25 @@ export const useStore = create<ForingiStore>((set) => ({
     };
   }),
 
-  removePlayer: (id) => set(s => {
-    const { [id]: _, ...rest } = s.players;
-    for (const p of Object.values(rest)) {
-      p.blacklist = p.blacklist.filter(x => x !== id);
+  removePlayer: (id) => {
+    const { sessionCode, hostToken } = useStore.getState();
+    if (sessionCode && hostToken) {
+      removePlayerFromSession(sessionCode, hostToken, id).catch(console.error);
     }
-    const groups = { ...s.groups };
-    for (const g of Object.values(groups)) {
-      if (g.memberIds.includes(id)) {
-        groups[g.id] = { ...g, memberIds: g.memberIds.filter(x => x !== id) };
+    set(s => {
+      const { [id]: _, ...rest } = s.players;
+      for (const p of Object.values(rest)) {
+        p.blacklist = p.blacklist.filter(x => x !== id);
       }
-    }
-    return { players: rest, groups };
-  }),
+      const groups = { ...s.groups };
+      for (const g of Object.values(groups)) {
+        if (g.memberIds.includes(id)) {
+          groups[g.id] = { ...g, memberIds: g.memberIds.filter(x => x !== id) };
+        }
+      }
+      return { players: rest, groups };
+    });
+  },
 
   updatePlayerPowers: (id, powers) => set(s => {
     const p = s.players[id];

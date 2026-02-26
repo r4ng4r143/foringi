@@ -8,7 +8,7 @@ const ALL_BRACKETS = [Bracket.EXHIBITION, Bracket.CORE, Bracket.UPGRADED, Bracke
 
 interface PlayerEntry {
   name: string;
-  bracket: number;
+  brackets: number[];
 }
 
 export function JoinPage() {
@@ -17,7 +17,7 @@ export function JoinPage() {
   const sessionName = useStore(s => s.sessionName);
   const clearSession = useStore(s => s.clearSession);
 
-  const [entries, setEntries] = useState<PlayerEntry[]>([{ name: '', bracket: Bracket.CORE }]);
+  const [entries, setEntries] = useState<PlayerEntry[]>([{ name: '', brackets: [Bracket.CORE] }]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -35,13 +35,22 @@ export function JoinPage() {
     );
   }
 
-  const updateEntry = (i: number, field: keyof PlayerEntry, value: string | number) => {
-    setEntries(prev => prev.map((e, j) => j === i ? { ...e, [field]: value } : e));
+  const updateName = (i: number, name: string) => {
+    setEntries(prev => prev.map((e, j) => j === i ? { ...e, name } : e));
+  };
+
+  const toggleBracket = (i: number, b: number) => {
+    setEntries(prev => prev.map((e, j) => {
+      if (j !== i) return e;
+      const has = e.brackets.includes(b);
+      const next = has ? e.brackets.filter(x => x !== b) : [...e.brackets, b].sort();
+      return { ...e, brackets: next };
+    }));
   };
 
   const addFriend = () => {
     if (entries.length >= 4) return;
-    setEntries(prev => [...prev, { name: '', bracket: Bracket.CORE }]);
+    setEntries(prev => [...prev, { name: '', brackets: [Bracket.CORE] }]);
   };
 
   const removeFriend = (i: number) => {
@@ -53,14 +62,14 @@ export function JoinPage() {
     e.preventDefault();
     if (!sessionCode) return;
 
-    const valid = entries.filter(p => p.name.trim());
+    const valid = entries.filter(p => p.name.trim() && p.brackets.length > 0);
     if (valid.length === 0) return;
 
     setLoading(true);
     setError('');
     try {
       await joinSession(sessionCode, {
-        players: valid.map(p => ({ name: p.name.trim(), powers: [p.bracket] })),
+        players: valid.map(p => ({ name: p.name.trim(), powers: p.brackets })),
       });
       useStore.getState().setView('joined');
     } catch (err) {
@@ -93,7 +102,7 @@ export function JoinPage() {
                 type="text"
                 placeholder={i === 0 ? 'Your name' : "Friend's name"}
                 value={entry.name}
-                onChange={e => updateEntry(i, 'name', e.target.value)}
+                onChange={e => updateName(i, e.target.value)}
                 className={styles.nameInput}
                 autoFocus={i === 0}
               />
@@ -102,8 +111,8 @@ export function JoinPage() {
                   <button
                     key={b}
                     type="button"
-                    className={`${styles.bracketBtn} ${styles[`b${b}`]} ${entry.bracket === b ? styles.selected : ''}`}
-                    onClick={() => updateEntry(i, 'bracket', b)}
+                    className={`${styles.bracketBtn} ${styles[`b${b}`]} ${entry.brackets.includes(b) ? styles.selected : ''}`}
+                    onClick={() => toggleBracket(i, b)}
                   >
                     <span className={styles.bracketNum}>{b}</span>
                     <span className={styles.bracketLabel}>{BRACKET_LABELS[b]}</span>
@@ -122,7 +131,7 @@ export function JoinPage() {
           <button
             type="submit"
             className={styles.submitBtn}
-            disabled={loading || !entries.some(e => e.name.trim())}
+            disabled={loading || !entries.some(e => e.name.trim() && e.brackets.length > 0)}
           >
             {loading ? 'Joining...' : 'Sign Up'}
           </button>
