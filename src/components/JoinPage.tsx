@@ -4,6 +4,8 @@ import { joinSession, getSession, leaveSession } from '../api/client';
 import { Bracket, BRACKET_LABELS } from '../engine/types';
 import type { PlayerData, SolutionData } from '../engine/types';
 import { InfoPopup } from './InfoPopup';
+import howItWorks from '../content/how-it-works.md?raw';
+import aboutYourPod from '../content/about-your-pod.md?raw';
 import styles from './JoinPage.module.css';
 
 const ALL_BRACKETS = [Bracket.EXHIBITION, Bracket.CORE, Bracket.UPGRADED, Bracket.OPTIMIZED, Bracket.CEDH];
@@ -51,10 +53,7 @@ function JoinedView() {
           <>
             <h2 className={styles.title}>
               Your pod{myPods.length > 1 ? 's' : ''}{' '}
-              <InfoPopup label="?" title="About your pod">
-                <p>Pods are balanced using a search algorithm that tries to seat players at similar power levels.</p>
-                <p>The score is a sum of penalties — 0 means a perfect match. Lower is better. The scale depends on the number of players, so compare scores within the same session rather than across sessions.</p>
-              </InfoPopup>
+              <InfoPopup label="?" title="About your pod" markdown={aboutYourPod} />
             </h2>
             {myPods.map(pod => (
               <div key={pod.playerId} className={styles.podCard}>
@@ -166,12 +165,7 @@ export function JoinPage() {
         <p className={styles.sessionInfo}>{sessionName}</p>
         <h2 className={styles.title}>
           Join the game{' '}
-          <InfoPopup label="?" title="How it works">
-            <p>Pick the power bracket(s) that match your deck. The host will use this to balance the pods so everyone plays at a similar level.</p>
-            <p><strong>1 Exhibition</strong> — Precons and casual builds. <strong>2 Core</strong> — Upgraded precons. <strong>3 Upgraded</strong> — Tuned decks. <strong>4 Optimized</strong> — High-power. <strong>5 cEDH</strong> — Competitive.</p>
-            <p>Tap one bracket, or tap two to set a range (e.g. 2–4 if you're flexible).</p>
-            <p>Playing with friends? Use "+ Add a friend" to sign them up too — you'll be grouped together so they don't have to join separately.</p>
-          </InfoPopup>
+          <InfoPopup label="?" title="How it works" markdown={howItWorks} />
         </h2>
 
         <form onSubmit={handleSubmit} className={styles.form}>

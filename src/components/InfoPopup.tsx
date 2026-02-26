@@ -1,13 +1,15 @@
 import { useState, useEffect, useCallback, type ReactNode } from 'react';
+import { renderMarkdown } from '../content/markdown';
 import styles from './InfoPopup.module.css';
 
 interface InfoPopupProps {
   label?: string;
   title: string;
-  children: ReactNode;
+  markdown?: string;
+  children?: ReactNode;
 }
 
-export function InfoPopup({ label = '?', title, children }: InfoPopupProps) {
+export function InfoPopup({ label = '?', title, markdown, children }: InfoPopupProps) {
   const [open, setOpen] = useState(false);
 
   const close = useCallback(() => setOpen(false), []);
@@ -32,7 +34,11 @@ export function InfoPopup({ label = '?', title, children }: InfoPopupProps) {
               <span className={styles.title}>{title}</span>
               <button type="button" className={styles.close} onClick={close}>&times;</button>
             </div>
-            <div className={styles.body}>{children}</div>
+            {markdown ? (
+              <div className={styles.body} dangerouslySetInnerHTML={{ __html: renderMarkdown(markdown) }} />
+            ) : (
+              <div className={styles.body}>{children}</div>
+            )}
           </div>
         </>
       )}
