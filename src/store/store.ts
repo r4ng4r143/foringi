@@ -92,8 +92,9 @@ export const useStore = create<ForingiStore>((set) => ({
     }
     set(s => {
       const { [id]: _, ...rest } = s.players;
-      for (const p of Object.values(rest)) {
-        p.blacklist = p.blacklist.filter(x => x !== id);
+      const players: typeof rest = {};
+      for (const [pid, p] of Object.entries(rest)) {
+        players[Number(pid)] = { ...p, blacklist: p.blacklist.filter(x => x !== id) };
       }
       const groups = { ...s.groups };
       for (const g of Object.values(groups)) {
@@ -101,7 +102,7 @@ export const useStore = create<ForingiStore>((set) => ({
           groups[g.id] = { ...g, memberIds: g.memberIds.filter(x => x !== id) };
         }
       }
-      return { players: rest, groups };
+      return { players, groups };
     });
   },
 
