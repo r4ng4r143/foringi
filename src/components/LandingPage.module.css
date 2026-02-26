@@ -17,11 +17,12 @@
 }
 
 .logo {
+  font-family: 'Belwe Bold', 'Cinzel', serif;
   font-size: 2.5rem;
-  font-weight: 800;
+  font-weight: 900;
   color: var(--accent);
   margin: 0 0 4px;
-  letter-spacing: -1px;
+  letter-spacing: 4px;
 }
 
 .tagline {

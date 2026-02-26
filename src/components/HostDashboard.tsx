@@ -33,7 +33,7 @@ export function HostDashboard() {
   return (
     <div className={styles.layout}>
       <aside className={styles.sidebar}>
-        <h2 className={styles.title}>Foringi</h2>
+        <h2 className={styles.title}>FORINGI</h2>
         <PlayerForm />
         <PlayerList />
         <GroupPanel />

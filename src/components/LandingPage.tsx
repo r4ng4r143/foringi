@@ -55,7 +55,7 @@ export function LandingPage() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <h1 className={styles.logo}>Foringi</h1>
+        <h1 className={styles.logo}>FORINGI</h1>
         <p className={styles.tagline}>Commander pod matchmaking</p>
 
         <div className={styles.section}>

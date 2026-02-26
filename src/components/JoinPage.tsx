@@ -71,7 +71,7 @@ function JoinedView() {
             <div className={styles.dots}><span /><span /><span /></div>
           </>
         )}
-        <button className={styles.backBtn} onClick={clearSession}>Leave</button>
+        <button className={styles.backBtn} onClick={() => { sessionStorage.removeItem('foringi_joined'); clearSession(); }}>Leave</button>
       </div>
     </div>
   );
@@ -133,6 +133,7 @@ export function JoinPage() {
         players: valid.map(p => ({ name: p.name.trim(), powers: p.brackets })),
       });
       useStore.getState().setJoinedPlayerIds(res.playerIds);
+      sessionStorage.setItem('foringi_joined', JSON.stringify({ code: sessionCode, playerIds: res.playerIds }));
       useStore.getState().setView('joined');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to join');

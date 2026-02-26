@@ -38,6 +38,23 @@ function useRouteRestore() {
       return;
     }
 
+    const saved = sessionStorage.getItem('foringi_joined');
+    if (saved) {
+      try {
+        const { code, playerIds } = JSON.parse(saved);
+        getSession(code).then(data => {
+          const s = useStore.getState();
+          s.setSession(code, null);
+          s.setSessionName(data.name);
+          s.setJoinedPlayerIds(playerIds);
+          s.setView('joined');
+        }).catch(() => {
+          sessionStorage.removeItem('foringi_joined');
+        });
+        return;
+      } catch { sessionStorage.removeItem('foringi_joined'); }
+    }
+
     const joinMatch = path.match(/^\/join\/([A-Z0-9]{4,8})$/i);
     if (joinMatch) {
       const code = joinMatch[1].toUpperCase();
