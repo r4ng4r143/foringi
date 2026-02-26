@@ -6,6 +6,7 @@ dist/
 *.js.map
 
 .DS_Store
+.dccache
 .cursor/
 .vscode/
 .idea/

@@ -4,6 +4,7 @@ import { getSession } from './api/client';
 import { LandingPage } from './components/LandingPage';
 import { HostDashboard } from './components/HostDashboard';
 import { JoinPage } from './components/JoinPage';
+import { Footer } from './components/Footer';
 
 const views: Record<AppView, React.FC> = {
   landing: LandingPage,
@@ -76,5 +77,12 @@ export function App() {
   useRouteRestore();
   const view = useStore(s => s.view);
   const View = views[view];
-  return <View />;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <div style={{ flex: 1 }}>
+        <View />
+      </div>
+      <Footer />
+    </div>
+  );
 }
