@@ -16,10 +16,13 @@ function JoinedView() {
   const sessionName = useStore(s => s.sessionName);
   const joinedIds = useStore(s => s.joinedPlayerIds);
   const clearSession = useStore(s => s.clearSession);
+  const pendingJoinCode = useStore(s => s.pendingJoinCode);
+  const setPendingJoinCode = useStore(s => s.setPendingJoinCode);
 
   const [solution, setSolution] = useState<SolutionData | null>(null);
   const [players, setPlayers] = useState<Record<number, PlayerData>>({});
   const [removed, setRemoved] = useState(false);
+  const [copied, setCopied] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -73,7 +76,43 @@ function JoinedView() {
         <p className={styles.sessionInfo}>
           {sessionName}
           {sessionCode && <span className={styles.sessionCode}>{sessionCode}</span>}
+          {sessionCode && (
+            <button
+              className={styles.shareBtn}
+              onClick={() => {
+                const url = `${window.location.origin}/join/${sessionCode}`;
+                navigator.clipboard.writeText(url).then(() => {
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                }).catch(() => {});
+              }}
+            >{copied ? 'Copied!' : 'Share'}</button>
+          )}
         </p>
+        {pendingJoinCode && (
+          <div className={styles.switchBanner}>
+            <p>You scanned a code for a different session (<strong>{pendingJoinCode}</strong>).</p>
+            <div className={styles.switchActions}>
+              <button
+                className={styles.switchBtn}
+                onClick={() => {
+                  if (sessionCode && joinedIds.length) leaveSession(sessionCode, joinedIds).catch(() => {});
+                  localStorage.removeItem('foringi_joined');
+                  setPendingJoinCode(null);
+                  const code = pendingJoinCode;
+                  clearSession();
+                  getSession(code).then(data => {
+                    const s = useStore.getState();
+                    s.setSession(code, null);
+                    s.setSessionName(data.name);
+                    s.setView('join');
+                  }).catch(() => {});
+                }}
+              >Switch session</button>
+              <button className={styles.dismissBtn} onClick={() => setPendingJoinCode(null)}>Stay here</button>
+            </div>
+          </div>
+        )}
         {myPods.length > 0 ? (
           <>
             <h2 className={styles.title}>

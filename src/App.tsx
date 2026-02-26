@@ -43,12 +43,18 @@ function useRouteRestore() {
     if (saved) {
       try {
         const { code, playerIds } = JSON.parse(saved);
+        const joinMatch = path.match(/^\/join\/([A-Z0-9]{4,8})$/i);
+        const incomingCode = joinMatch ? joinMatch[1].toUpperCase() : null;
+
         getSession(code).then(data => {
           const s = useStore.getState();
           s.setSession(code, null);
           s.setSessionName(data.name);
           s.setJoinedPlayerIds(playerIds);
           s.setView('joined');
+          if (incomingCode && incomingCode !== code) {
+            s.setPendingJoinCode(incomingCode);
+          }
           history.replaceState(null, '', '/');
         }).catch(() => {
           localStorage.removeItem('foringi_joined');

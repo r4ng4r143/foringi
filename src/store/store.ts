@@ -52,6 +52,8 @@ interface ForingiStore {
   // --- Player join (client-side) ---
   joinedPlayerIds: number[];
   setJoinedPlayerIds: (ids: number[]) => void;
+  pendingJoinCode: string | null;
+  setPendingJoinCode: (code: string | null) => void;
 
   // --- Search ---
   isSearching: boolean;
@@ -235,6 +237,8 @@ export const useStore = create<ForingiStore>((set) => ({
 
   joinedPlayerIds: [],
   setJoinedPlayerIds: (ids) => set({ joinedPlayerIds: ids }),
+  pendingJoinCode: null,
+  setPendingJoinCode: (code) => set({ pendingJoinCode: code }),
 
   isSearching: false,
   searchProgress: {
