@@ -38,6 +38,10 @@
   padding: 8px;
 }
 
+.seatWrapper {
+  display: contents;
+}
+
 .seat {
   display: flex;
   align-items: center;
@@ -48,12 +52,18 @@
   border-radius: var(--radius-sm);
   cursor: grab;
   user-select: none;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, outline-color 0.15s ease;
   min-width: 0;
   overflow: hidden;
+  outline: 2px solid transparent;
 }
 
 .seat:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.seat.expanded {
+  outline-color: var(--accent);
   background: rgba(255, 255, 255, 0.12);
 }
 
@@ -69,6 +79,44 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
+}
+
+.detail {
+  grid-column: 1 / -1;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detailName {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.78rem;
+}
+
+.detailLabel {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.detailValue {
+  color: var(--text);
+  font-weight: 600;
+  text-align: right;
+  word-break: break-word;
 }
 
 .emptySeat {
