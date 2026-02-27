@@ -5,6 +5,7 @@ import { LandingPage } from './components/LandingPage';
 import { HostDashboard } from './components/HostDashboard';
 import { JoinPage } from './components/JoinPage';
 import { Footer } from './components/Footer';
+import styles from './App.module.css';
 
 const views: Record<AppView, React.FC> = {
   landing: LandingPage,
@@ -88,11 +89,11 @@ export function App() {
   const view = useStore(s => s.view);
   const View = views[view];
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <div style={{ flex: 1 }}>
+    <div className={styles.app}>
+      <div className={styles.content}>
         <View />
       </div>
-      <Footer />
+      {view !== 'host' && <Footer />}
     </div>
   );
 }
