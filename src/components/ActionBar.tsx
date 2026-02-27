@@ -10,6 +10,8 @@ export function ActionBar() {
   const progress = useStore(s => s.searchProgress);
   const playerCount = useStore(s => Object.keys(s.players).length);
   const hasSolution = useStore(s => s.solution !== null);
+  const tableCount = useStore(s => s.tableCount);
+  const setTableCount = useStore(s => s.setTableCount);
   const { startSearch, cancelSearch } = useSearch();
   const solution = useStore(s => s.solution);
   const sessionCode = useStore(s => s.sessionCode);
@@ -89,6 +91,20 @@ export function ActionBar() {
             e.target.value = '';
           }}
         />
+        <div className={styles.podStepper}>
+          <span className={styles.podLabel}>Max Pods</span>
+          <button
+            className={styles.stepBtn}
+            disabled={tableCount <= 1}
+            onClick={() => setTableCount(Math.max(1, tableCount - 1))}
+          >&minus;</button>
+          <span className={styles.podCount}>{tableCount}</span>
+          <button
+            className={styles.stepBtn}
+            disabled={tableCount >= 30}
+            onClick={() => setTableCount(Math.min(30, tableCount + 1))}
+          >+</button>
+        </div>
       </div>
 
       {notifyError && <p className={styles.error}>{notifyError}</p>}

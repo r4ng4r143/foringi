@@ -371,6 +371,7 @@ export function runSearch(
   weights: Partial<HeuristicWeights> = {},
   groups: GroupData[] = [],
   onProgress?: ProgressCallback,
+  maxTables?: number,
 ): SolutionData[] {
   const players: Record<number, Player> = {};
   const playerArr: Player[] = [];
@@ -412,7 +413,7 @@ export function runSearch(
   // Ungrouped players go to the engine
   const ungrouped = playerArr.filter(p => !groupedIds.has(p.id));
 
-  const env = new Environment(ungrouped, preSeatTables.length > 0 ? preSeatTables : undefined);
+  const env = new Environment(ungrouped, preSeatTables.length > 0 ? preSeatTables : undefined, maxTables);
   const heuristic = new Heuristic(players, playHistory, { ...DEFAULT_WEIGHTS, ...weights });
 
   let agent: Agent;

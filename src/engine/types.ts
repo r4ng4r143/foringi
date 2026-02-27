@@ -2,7 +2,7 @@ import { MinHeap } from './heap';
 import { hashString } from './hash';
 
 export const MAXSEATS = 4;
-export const MAXTABLES = 15;
+export const MAXTABLES = 30;
 export const TIMEOUT = 20000;
 
 export enum Bracket {

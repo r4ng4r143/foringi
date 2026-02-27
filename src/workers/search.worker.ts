@@ -7,6 +7,7 @@ export interface SearchRequest {
   playHistory?: PlayHistory;
   weights?: Partial<HeuristicWeights>;
   groups?: GroupData[];
+  maxTables?: number;
 }
 
 export interface SearchMessage {
@@ -18,7 +19,7 @@ export interface SearchMessage {
 
 self.onmessage = (e: MessageEvent<SearchRequest>) => {
   try {
-    const { players, agentType, playHistory, weights, groups } = e.data;
+    const { players, agentType, playHistory, weights, groups, maxTables } = e.data;
 
     const onProgress = (progress: SearchProgress) => {
       try {
@@ -26,7 +27,7 @@ self.onmessage = (e: MessageEvent<SearchRequest>) => {
       } catch { /* worker terminated mid-search */ }
     };
 
-    const solutions = runSearch(players, agentType, playHistory ?? {}, weights ?? {}, groups ?? [], onProgress);
+    const solutions = runSearch(players, agentType, playHistory ?? {}, weights ?? {}, groups ?? [], onProgress, maxTables);
 
     (self as unknown as Worker).postMessage({ type: 'complete', solutions } satisfies SearchMessage);
   } catch (err) {

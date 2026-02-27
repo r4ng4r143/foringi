@@ -5,12 +5,13 @@ export class Environment {
   maxTables: number;
   tables: Table[];
 
-  constructor(players: Player[], preSeatTables?: Table[]) {
+  constructor(players: Player[], preSeatTables?: Table[], maxTablesOverride?: number) {
     this.playersList = players;
     const count = players.length + (preSeatTables?.reduce((s, t) => s + t.seatedPlayers(), 0) ?? 0);
     const ideal = Math.ceil(count / MAXSEATS);
     const max = Math.max(1, Math.ceil(count / 2));
-    this.maxTables = Math.min(Math.max(1, Math.min(ideal, max)), MAXTABLES);
+    const cap = maxTablesOverride ?? MAXTABLES;
+    this.maxTables = Math.min(Math.max(1, Math.min(ideal, max)), cap);
 
     this.tables = [];
     if (preSeatTables) {

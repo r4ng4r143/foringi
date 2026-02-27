@@ -56,7 +56,7 @@ export function PodGrid() {
   if (!solution) {
     return (
       <div className={styles.grid}>
-        {Array.from({ length: Math.min(tableCount, 15) }, (_, i) => (
+        {Array.from({ length: tableCount }, (_, i) => (
           <div key={i} className={styles.emptyPod}>
             <span className={styles.podNum}>{i + 1}</span>
             <div className={styles.emptySeats}>

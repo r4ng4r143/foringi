@@ -13,7 +13,7 @@ export function useSearch() {
   const workerRef = useRef<Worker | null>(null);
 
   const startSearch = useCallback((agentType: 'astar' | 'random') => {
-    const { players, groups, setSearching, setSearchProgress, setSolution } = useStore.getState();
+    const { players, groups, tableCount, setSearching, setSearchProgress, setSolution } = useStore.getState();
 
     const playerList = Object.values(players);
     if (playerList.length === 0) return;
@@ -33,6 +33,7 @@ export function useSearch() {
       players: playerList,
       agentType,
       groups: Object.values(groups),
+      maxTables: tableCount,
     };
 
     worker.onmessage = (e: MessageEvent<SearchMessage>) => {
