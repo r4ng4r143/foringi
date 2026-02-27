@@ -1,12 +1,13 @@
 .footer {
   border-top: 1px solid var(--border-dark);
   padding: 16px 24px;
-  text-align: center;
   font-size: 0.75rem;
   color: var(--text-muted);
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .footer a {
@@ -18,8 +19,8 @@
   text-decoration: underline;
 }
 
-.bmcBtn {
-  height: 40px;
-  width: auto;
-  margin-top: 4px;
+.bmcWrap {
+  margin-left: auto;
+  transform: scale(0.7);
+  transform-origin: right center;
 }
