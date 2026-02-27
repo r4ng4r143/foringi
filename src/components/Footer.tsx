@@ -9,6 +9,13 @@ export function Footer() {
         {' · '}
         MIT License
       </span>
+      <a href="https://www.buymeacoffee.com/r4ng4ry" target="_blank" rel="noopener noreferrer">
+        <img
+          src="https://cdn.buymeacoffee.com/buttons/v2/arial-yellow.png"
+          alt="Buy me a booster"
+          className={styles.bmcBtn}
+        />
+      </a>
     </footer>
   );
 }
