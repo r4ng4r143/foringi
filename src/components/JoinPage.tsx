@@ -1,15 +1,15 @@
-import { useState, useEffect, useRef, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useStore } from '../store/store';
-import { joinSession, getSession, leaveSession } from '../api/client';
-import { Bracket, BRACKET_LABELS } from '../engine/types';
-import type { PlayerData, SolutionData } from '../engine/types';
+import { joinSession, getSession } from '../api/client';
+import { Bracket, BRACKET_LABELS, ALL_BRACKETS, tapBracket } from '../engine/types';
+import type { ClientPlayerData } from '../api/types';
+import type { SolutionData } from '../engine/types';
+import { useWebSocket } from '../hooks/useWebSocket';
 import { InfoPopup } from './InfoPopup';
 import { GuideButton } from './GuideModal';
 import howItWorks from '../content/how-it-works.md?raw';
 import aboutYourPod from '../content/about-your-pod.md?raw';
 import styles from './JoinPage.module.css';
-
-const ALL_BRACKETS = [Bracket.EXHIBITION, Bracket.CORE, Bracket.UPGRADED, Bracket.OPTIMIZED, Bracket.CEDH];
 
 function JoinedView() {
   const sessionCode = useStore(s => s.sessionCode);
@@ -19,32 +19,26 @@ function JoinedView() {
   const pendingJoinCode = useStore(s => s.pendingJoinCode);
   const setPendingJoinCode = useStore(s => s.setPendingJoinCode);
 
-  const [solution, setSolution] = useState<SolutionData | null>(null);
-  const [players, setPlayers] = useState<Record<number, PlayerData>>({});
-  const [removed, setRemoved] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const storePlayersRaw = useStore(s => s.players);
+  const storeSolution = useStore(s => s.solution);
 
-  useEffect(() => {
-    if (!sessionCode) return;
-    const poll = async () => {
-      try {
-        const data = await getSession(sessionCode);
-        const stillIn = joinedIds.some(id => String(id) in data.players);
-        if (!stillIn) {
-          setRemoved(true);
-          localStorage.removeItem('foringi_joined');
-          if (intervalRef.current) clearInterval(intervalRef.current);
-          return;
-        }
-        setPlayers(data.players);
-        if (data.solution) setSolution(data.solution);
-      } catch { /* session may have ended */ }
-    };
-    poll();
-    intervalRef.current = setInterval(poll, 5000);
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [sessionCode, joinedIds]);
+  const players: Record<number, ClientPlayerData> = {};
+  for (const [id, p] of Object.entries(storePlayersRaw)) {
+    players[Number(id)] = { id: (p as { id: number }).id, name: (p as { name: string }).name };
+  }
+  const solution: { seatings: number[][] } | null = storeSolution
+    ? { seatings: (storeSolution as SolutionData).seatings }
+    : null;
+
+  const { leave } = useWebSocket(sessionCode ?? '', null);
+
+  const removed = joinedIds.length > 0 && Object.keys(players).length > 0 &&
+    !joinedIds.some(id => String(id) in players);
+  const [copied, setCopied] = useState(false);
+
+  if (removed) {
+    localStorage.removeItem('foringi_joined');
+  }
 
   const myPods: { podIndex: number; playerId: number; mates: number[] }[] = [];
   if (solution) {
@@ -96,7 +90,7 @@ function JoinedView() {
               <button
                 className={styles.switchBtn}
                 onClick={() => {
-                  if (sessionCode && joinedIds.length) leaveSession(sessionCode, joinedIds).catch(() => {});
+                  if (joinedIds.length) leave(joinedIds);
                   localStorage.removeItem('foringi_joined');
                   setPendingJoinCode(null);
                   const code = pendingJoinCode;
@@ -143,7 +137,7 @@ function JoinedView() {
         )}
         <div className={styles.bottomRow}>
           <button className={styles.backBtn} onClick={() => {
-            if (sessionCode && joinedIds.length) leaveSession(sessionCode, joinedIds).catch(() => {});
+            if (joinedIds.length) leave(joinedIds);
             localStorage.removeItem('foringi_joined');
             clearSession();
           }}>Leave</button>
@@ -154,15 +148,12 @@ function JoinedView() {
   );
 }
 
+let nextEntryId = 0;
+
 interface PlayerEntry {
+  id: number;
   name: string;
   range: [number, number];
-}
-
-function tapBracket(min: number, max: number, b: number): [number, number] {
-  if (b < min) return [b, max];
-  if (b > max) return [min, b];
-  return [b, b];
 }
 
 export function JoinPage() {
@@ -171,7 +162,7 @@ export function JoinPage() {
   const sessionName = useStore(s => s.sessionName);
   const clearSession = useStore(s => s.clearSession);
 
-  const [entries, setEntries] = useState<PlayerEntry[]>([{ name: '', range: [Bracket.CORE, Bracket.CORE] }]);
+  const [entries, setEntries] = useState<PlayerEntry[]>([{ id: nextEntryId++, name: '', range: [Bracket.CORE, Bracket.CORE] }]);
   const [strictGroup, setStrictGroup] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -193,7 +184,7 @@ export function JoinPage() {
 
   const addFriend = () => {
     if (entries.length >= 4) return;
-    setEntries(prev => [...prev, { name: '', range: [Bracket.CORE, Bracket.CORE] }]);
+    setEntries(prev => [...prev, { id: nextEntryId++, name: '', range: [Bracket.CORE, Bracket.CORE] }]);
   };
 
   const removeFriend = (i: number) => {
@@ -239,7 +230,7 @@ export function JoinPage() {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           {entries.map((entry, i) => (
-            <div key={i} className={styles.entry}>
+            <div key={entry.id} className={styles.entry}>
               {entries.length > 1 && (
                 <div className={styles.entryHeader}>
                   <span className={styles.entryLabel}>Player {i + 1}</span>

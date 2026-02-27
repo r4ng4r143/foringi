@@ -1,8 +1,8 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 import { useStore } from '../store/store';
 import type { SearchMessage, SearchRequest } from '../workers/search.worker';
 import type { SearchProgress } from '../engine/types';
-import { postSolution } from '../api/client';
+import { sendWsMessage } from './useWebSocket';
 
 const emptyProgress: SearchProgress = {
   nodesExpanded: 0, nodesGenerated: 0, nodesSkipped: 0,
@@ -13,7 +13,7 @@ export function useSearch() {
   const workerRef = useRef<Worker | null>(null);
 
   const startSearch = useCallback((agentType: 'astar' | 'random') => {
-    const { players, groups, setSearching, setSearchProgress, setSolution, sessionCode, hostToken } = useStore.getState();
+    const { players, groups, setSearching, setSearchProgress, setSolution } = useStore.getState();
 
     const playerList = Object.values(players);
     if (playerList.length === 0) return;
@@ -45,9 +45,7 @@ export function useSearch() {
         if (msg.solutions && msg.solutions.length > 0) {
           const best = msg.solutions[0];
           setSolution(best);
-          if (sessionCode && hostToken) {
-            postSolution(sessionCode, hostToken, best).catch(console.error);
-          }
+          sendWsMessage({ type: 'solution', seatings: best.seatings, score: best.score ?? 0 });
         }
         worker.terminate();
       } else if (msg.type === 'error') {
@@ -70,6 +68,13 @@ export function useSearch() {
     workerRef.current?.terminate();
     workerRef.current = null;
     useStore.getState().setSearching(false);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      workerRef.current?.terminate();
+      workerRef.current = null;
+    };
   }, []);
 
   return { startSearch, cancelSearch };

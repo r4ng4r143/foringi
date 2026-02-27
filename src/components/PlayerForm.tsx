@@ -1,15 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useStore } from '../store/store';
-import { Bracket, BRACKET_LABELS } from '../engine/types';
+import { Bracket, BRACKET_LABELS, ALL_BRACKETS, tapBracket } from '../engine/types';
 import styles from './PlayerForm.module.css';
-
-const ALL_BRACKETS = [Bracket.EXHIBITION, Bracket.CORE, Bracket.UPGRADED, Bracket.OPTIMIZED, Bracket.CEDH];
-
-function tapBracket(min: number, max: number, b: number): [number, number] {
-  if (b < min) return [b, max];
-  if (b > max) return [min, b];
-  return [b, b];
-}
 
 export function PlayerForm() {
   const addPlayer = useStore(s => s.addPlayer);

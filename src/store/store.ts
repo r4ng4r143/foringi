@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import type { PlayerData, GroupData, SolutionData, SearchProgress } from '../engine/types';
-import { removePlayerFromSession, patchSession } from '../api/client';
 
 export type AppView = 'landing' | 'host' | 'join' | 'joined';
 
@@ -94,12 +93,7 @@ export const useStore = create<ForingiStore>((set) => ({
     };
   }),
 
-  removePlayer: (id) => {
-    const { sessionCode, hostToken } = useStore.getState();
-    if (sessionCode && hostToken) {
-      removePlayerFromSession(sessionCode, hostToken, id).catch(console.error);
-    }
-    set(s => {
+  removePlayer: (id) => set(s => {
       const { [id]: _, ...rest } = s.players;
       const players: typeof rest = {};
       for (const [pid, p] of Object.entries(rest)) {
@@ -115,8 +109,7 @@ export const useStore = create<ForingiStore>((set) => ({
         ? { ...s.solution, seatings: s.solution.seatings.map(pod => pod.filter(pid => pid !== id)), podScores: undefined }
         : null;
       return { players, groups, solution };
-    });
-  },
+    }),
 
   updatePlayerPowers: (id, powers) => set(s => {
     const p = s.players[id];
@@ -260,30 +253,13 @@ export const useStore = create<ForingiStore>((set) => ({
   setSearchProgress: (p) => set({ searchProgress: p }),
 }));
 
-let syncTimer: ReturnType<typeof setTimeout> | null = null;
 let skipNextSync = false;
-
-function scheduleSyncToKV() {
-  if (skipNextSync) return;
-  const { sessionCode, hostToken } = useStore.getState();
-  if (!sessionCode || !hostToken) return;
-  if (syncTimer) clearTimeout(syncTimer);
-  syncTimer = setTimeout(() => {
-    const { players, nextPlayerId, groups, nextGroupId, solution, sessionCode: code, hostToken: token } = useStore.getState();
-    if (!code || !token) return;
-    patchSession(code, token, { players, nextPlayerId, groups, nextGroupId, solution }).catch(console.error);
-  }, 500);
-}
 
 export function suppressSync(fn: () => void) {
   skipNextSync = true;
   try { fn(); } finally { skipNextSync = false; }
 }
 
-useStore.subscribe(
-  (state, prev) => {
-    if (state.players !== prev.players || state.groups !== prev.groups || state.solution !== prev.solution) {
-      scheduleSyncToKV();
-    }
-  },
-);
+export function isSyncSuppressed(): boolean {
+  return skipNextSync;
+}

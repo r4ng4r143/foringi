@@ -8,7 +8,8 @@ import { PodGrid } from './PodGrid';
 import { GuideButton } from './GuideModal';
 import { InfoPopup } from './InfoPopup';
 import aboutMd from '../content/about.md?raw';
-import { useSessionPolling } from '../hooks/useSession';
+import { useWebSocket } from '../hooks/useWebSocket';
+import { useStore } from '../store/store';
 import type { SessionEvent } from '../api/types';
 import styles from './HostDashboard.module.css';
 
@@ -43,8 +44,8 @@ function ActivityLog({ events, unread, onOpen }: { events: SessionEvent[]; unrea
           <h4 className={styles.logTitle}>Activity</h4>
           {events.length === 0 && <p className={styles.logEmpty}>No activity yet</p>}
           <ul className={styles.logList}>
-            {[...events].reverse().map((e, i) => (
-              <li key={i} className={styles.logItem}>
+            {[...events].reverse().map((e) => (
+              <li key={e.ts} className={styles.logItem}>
                 <span className={styles.logTime}>{formatTime(e.ts)}</span>
                 <span>{formatEvent(e)}</span>
               </li>
@@ -57,7 +58,7 @@ function ActivityLog({ events, unread, onOpen }: { events: SessionEvent[]; unrea
 }
 
 function HostHelp() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(() => window.innerWidth > 768);
   return (
     <div className={styles.help}>
       <button className={styles.helpToggle} onClick={() => setOpen(v => !v)}>
@@ -76,12 +77,23 @@ function HostHelp() {
 }
 
 export function HostDashboard() {
-  const { eventLog, unreadCount, markRead } = useSessionPolling();
+  const sessionCode = useStore(s => s.sessionCode);
+  const hostToken = useStore(s => s.hostToken);
+  const { eventLog, unreadCount, markRead } = useWebSocket(sessionCode ?? '', hostToken);
   const [tab, setTab] = useState<'players' | 'groups'>('players');
+  const [mobileView, setMobileView] = useState<'dashboard' | 'sidebar'>('dashboard');
+
+  const showSidebar = (sidebarTab: 'players' | 'groups') => {
+    setTab(sidebarTab);
+    setMobileView('sidebar');
+  };
+
+  const sidebarClass = `${styles.sidebar} ${mobileView === 'dashboard' ? styles.mobileHidden : ''}`;
+  const mainClass = `${styles.main} ${mobileView === 'sidebar' ? styles.mobileHidden : ''}`;
 
   return (
     <div className={styles.layout}>
-      <aside className={styles.sidebar}>
+      <aside className={sidebarClass}>
         <div className={styles.sidebarHeader}>
           <h2 className={styles.title}>FORINGI</h2>
           <div className={styles.headerActions}>
@@ -105,12 +117,35 @@ export function HostDashboard() {
           {tab === 'players' ? <PlayerList /> : <GroupPanel />}
         </div>
       </aside>
-      <main className={styles.main}>
+      <main className={mainClass}>
         <SessionHeader />
         <HostHelp />
         <ActionBar />
         <PodGrid />
       </main>
+      <nav className={styles.bottomNav}>
+        <button
+          className={`${styles.navBtn} ${mobileView === 'dashboard' ? styles.navBtnActive : ''}`}
+          onClick={() => setMobileView('dashboard')}
+        >
+          <span className={styles.navIcon}>&#9881;</span>
+          Dashboard
+        </button>
+        <button
+          className={`${styles.navBtn} ${mobileView === 'sidebar' && tab === 'players' ? styles.navBtnActive : ''}`}
+          onClick={() => showSidebar('players')}
+        >
+          <span className={styles.navIcon}>&#128101;</span>
+          Players
+        </button>
+        <button
+          className={`${styles.navBtn} ${mobileView === 'sidebar' && tab === 'groups' ? styles.navBtnActive : ''}`}
+          onClick={() => showSidebar('groups')}
+        >
+          <span className={styles.navIcon}>&#128279;</span>
+          Groups
+        </button>
+      </nav>
     </div>
   );
 }

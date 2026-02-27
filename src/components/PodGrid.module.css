@@ -82,3 +82,9 @@
   font-size: 0.85rem;
   color: var(--text-dark);
 }
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}

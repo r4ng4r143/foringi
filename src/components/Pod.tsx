@@ -1,5 +1,5 @@
 import { useDroppable, useDraggable } from '@dnd-kit/core';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useStore } from '../store/store';
 import { BracketRange } from './PowerBadge';
 import { BRACKET_LABELS } from '../engine/types';
@@ -21,17 +21,15 @@ function PodModal({ podIndex, playerIds, podScore, onClose }: PodProps & { onClo
   const players = useStore(s => s.players);
   const groups = useStore(s => s.groups);
 
-  const close = useCallback(onClose, [onClose]);
-
   useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
+    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
-  }, [close]);
+  }, [onClose]);
 
   return (
     <>
-      <div className={styles.modalOverlay} onClick={close} />
+      <div className={styles.modalOverlay} onClick={onClose} />
       <div className={styles.modal}>
         <div className={styles.modalHeader}>
           <span className={styles.modalTitle}>Table {podIndex + 1}</span>
@@ -43,7 +41,7 @@ function PodModal({ podIndex, playerIds, podScore, onClose }: PodProps & { onClo
             )}
             <span>{playerIds.length}/4 players</span>
           </span>
-          <button type="button" className={styles.modalClose} onClick={close}>&times;</button>
+          <button type="button" className={styles.modalClose} onClick={onClose}>&times;</button>
         </div>
         <div className={styles.modalPlayers}>
           {playerIds.map(pid => {

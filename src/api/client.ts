@@ -3,9 +3,9 @@ import type {
   CreateSessionResponse,
   JoinSessionRequest,
   JoinSessionResponse,
-  SessionStateResponse,
+  HostSessionResponse,
+  ClientSessionResponse,
 } from './types';
-import type { SolutionData } from '../engine/types';
 
 const API_BASE = '/api/session';
 
@@ -33,50 +33,18 @@ export async function createSession(data: CreateSessionRequest = {}): Promise<Cr
   });
 }
 
-export async function getSession(code: string, hostToken?: string): Promise<SessionStateResponse> {
+export async function getSession(code: string, hostToken: string): Promise<HostSessionResponse>;
+export async function getSession(code: string): Promise<ClientSessionResponse>;
+export async function getSession(code: string, hostToken?: string): Promise<HostSessionResponse | ClientSessionResponse> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (hostToken) headers['X-Host-Token'] = hostToken;
-  return request<SessionStateResponse>(`${API_BASE}/${code}`, { headers });
+  return request(`${API_BASE}/${code}`, { headers });
 }
 
 export async function joinSession(code: string, data: JoinSessionRequest): Promise<JoinSessionResponse> {
   return request<JoinSessionResponse>(`${API_BASE}/${code}/join`, {
     method: 'POST',
     body: JSON.stringify(data),
-  });
-}
-
-export async function postSolution(code: string, hostToken: string, solution: SolutionData): Promise<void> {
-  await request<void>(`${API_BASE}/${code}/solution`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Host-Token': hostToken },
-    body: JSON.stringify(solution),
-  });
-}
-
-export async function patchSession(
-  code: string,
-  hostToken: string,
-  data: Record<string, unknown>,
-): Promise<void> {
-  await request<void>(`${API_BASE}/${code}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', 'X-Host-Token': hostToken },
-    body: JSON.stringify(data),
-  });
-}
-
-export async function removePlayerFromSession(code: string, hostToken: string, playerId: number): Promise<void> {
-  await request<void>(`${API_BASE}/${code}/player/${playerId}`, {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json', 'X-Host-Token': hostToken },
-  });
-}
-
-export async function leaveSession(code: string, playerIds: number[]): Promise<void> {
-  await request<void>(`${API_BASE}/${code}/leave`, {
-    method: 'POST',
-    body: JSON.stringify({ playerIds }),
   });
 }
 

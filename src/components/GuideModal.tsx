@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { renderMarkdown } from '../content/markdown';
 import guideRaw from '../../GUIDE.md?raw';
 import styles from './GuideModal.module.css';
@@ -19,14 +19,13 @@ export function GuideButton({ className }: { className?: string }) {
 }
 
 function GuideModal({ onClose }: { onClose: () => void }) {
-  const close = useCallback(onClose, [onClose]);
   const bodyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [close]);
+  }, [onClose]);
 
   const handleClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -42,11 +41,11 @@ function GuideModal({ onClose }: { onClose: () => void }) {
 
   return (
     <>
-      <div className={styles.overlay} onClick={close} />
+      <div className={styles.overlay} onClick={onClose} />
       <div className={styles.modal}>
         <div className={styles.header}>
           <span className={styles.title}>User Guide</span>
-          <button type="button" className={styles.close} onClick={close}>&times;</button>
+          <button type="button" className={styles.close} onClick={onClose}>&times;</button>
         </div>
         <div
           ref={bodyRef}

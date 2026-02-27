@@ -1,18 +1,5 @@
 import type { PlayerData, GroupData, SolutionData } from '../engine/types';
 
-export interface SessionData {
-  code: string;
-  hostToken: string;
-  name: string;
-  tableCount: number;
-  players: Record<number, PlayerData>;
-  nextPlayerId: number;
-  groups: Record<number, GroupData>;
-  nextGroupId: number;
-  solution: SolutionData | null;
-  createdAt: number;
-}
-
 export interface CreateSessionRequest {
   name?: string;
   tableCount?: number;
@@ -38,14 +25,28 @@ export interface SessionEvent {
   ts: number;
 }
 
-export interface SessionStateResponse {
+export interface HostSessionResponse {
   name: string;
-  tableCount?: number;
+  tableCount: number;
   players: Record<number, PlayerData>;
-  nextPlayerId?: number;
-  groups?: Record<number, GroupData>;
-  nextGroupId?: number;
+  nextPlayerId: number;
+  groups: Record<number, GroupData>;
+  nextGroupId: number;
   solution: SolutionData | null;
   playerCount: number;
-  eventLog?: SessionEvent[];
+  eventLog: SessionEvent[];
 }
+
+export interface ClientPlayerData {
+  id: number;
+  name: string;
+}
+
+export interface ClientSessionResponse {
+  name: string;
+  playerCount: number;
+  players: Record<number, ClientPlayerData>;
+  solution: { seatings: number[][] } | null;
+}
+
+export type SessionStateResponse = HostSessionResponse | ClientSessionResponse;

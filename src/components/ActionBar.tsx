@@ -1,7 +1,7 @@
 import { useStore } from '../store/store';
 import { useSearch } from '../hooks/useSearch';
 import { usePersistence } from '../hooks/usePersistence';
-import { postSolution } from '../api/client';
+import { sendWsMessage } from '../hooks/useWebSocket';
 import styles from './ActionBar.module.css';
 import { useRef, useState } from 'react';
 
@@ -17,6 +17,7 @@ export function ActionBar() {
   const { handleExport, handleImport } = usePersistence();
   const fileRef = useRef<HTMLInputElement>(null);
   const [notifying, setNotifying] = useState(false);
+  const [notifyError, setNotifyError] = useState('');
 
   const handleStart = () => {
     if (!hasSolution) {
@@ -24,13 +25,14 @@ export function ActionBar() {
     }
   };
 
-  const handleNotify = async () => {
-    if (!solution || !sessionCode || hostToken == null) return;
+  const handleNotify = () => {
+    if (!solution) return;
     setNotifying(true);
+    setNotifyError('');
     try {
-      await postSolution(sessionCode, hostToken, solution);
-    } catch (err) {
-      console.error('Failed to notify players:', err);
+      sendWsMessage({ type: 'solution', seatings: solution.seatings, score: solution.score ?? 0 });
+    } catch {
+      setNotifyError('Failed to notify — check your connection');
     } finally {
       setNotifying(false);
     }
@@ -88,6 +90,8 @@ export function ActionBar() {
           }}
         />
       </div>
+
+      {notifyError && <p className={styles.error}>{notifyError}</p>}
 
       {isSearching && (
         <div className={styles.progress}>

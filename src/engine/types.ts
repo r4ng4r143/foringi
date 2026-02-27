@@ -4,7 +4,6 @@ import { hashString } from './hash';
 export const MAXSEATS = 4;
 export const MAXTABLES = 15;
 export const TIMEOUT = 20000;
-export const MAXSOLUTIONS = 10;
 
 export enum Bracket {
   EXHIBITION = 1,
@@ -21,6 +20,14 @@ export const BRACKET_LABELS: Record<number, string> = {
   [Bracket.OPTIMIZED]: 'Optimized',
   [Bracket.CEDH]: 'cEDH',
 };
+
+export const ALL_BRACKETS = [Bracket.EXHIBITION, Bracket.CORE, Bracket.UPGRADED, Bracket.OPTIMIZED, Bracket.CEDH];
+
+export function tapBracket(min: number, max: number, b: number): [number, number] {
+  if (b < min) return [b, max];
+  if (b > max) return [min, b];
+  return [b, b];
+}
 
 export interface HeuristicWeights {
   powerImbalance: number;

@@ -48,27 +48,11 @@ describe('API client contracts', () => {
   });
 
   describe('204 No Content responses', () => {
-    it('patchSession handles 204 without throwing', async () => {
-      mockFetch.mockResolvedValueOnce(new Response(null, { status: 204 }));
-
-      await expect(
-        api.patchSession('ABC', 'token', { players: {} }),
-      ).resolves.not.toThrow();
-    });
-
     it('deleteSession handles 204 without throwing', async () => {
       mockFetch.mockResolvedValueOnce(new Response(null, { status: 204 }));
 
       await expect(
         api.deleteSession('ABC', 'token'),
-      ).resolves.not.toThrow();
-    });
-
-    it('postSolution handles 204 without throwing', async () => {
-      mockFetch.mockResolvedValueOnce(new Response(null, { status: 204 }));
-
-      await expect(
-        api.postSolution('ABC', 'token', { seatings: [[0, 1]], score: 5 }),
       ).resolves.not.toThrow();
     });
   });
@@ -78,14 +62,6 @@ describe('API client contracts', () => {
       mockFetch.mockResolvedValueOnce(new Response('Session not found', { status: 404 }));
 
       await expect(api.getSession('NOPE')).rejects.toThrow('Session not found');
-    });
-
-    it('403 throws with unauthorized message', async () => {
-      mockFetch.mockResolvedValueOnce(new Response('Unauthorized', { status: 403 }));
-
-      await expect(
-        api.patchSession('ABC', 'bad-token', {}),
-      ).rejects.toThrow('Unauthorized');
     });
 
     it('500 throws with status code when body is empty', async () => {

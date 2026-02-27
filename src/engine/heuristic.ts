@@ -80,6 +80,7 @@ export class Heuristic {
 
       for (let j = 0; j < pids.length; j++) {
         const pj = this.players[pids[j]];
+        if (!pj) continue;
         if (table.containsBlackList(pj)) blacklistCount++;
         for (let k = 0; k < pids.length; k++) {
           if (j === k) continue;

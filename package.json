@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:api": "wrangler dev",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "dev:worker": "wrangler pages dev dist --kv SESSIONS",
+    "deploy": "npm run build && wrangler deploy",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p src/server/tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest"
   },

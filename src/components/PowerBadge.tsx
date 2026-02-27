@@ -17,7 +17,7 @@ const CLASS_MAP: Record<number, string> = {
   [Bracket.CEDH]: styles.b5,
 };
 
-export function PowerBadge({ level }: { level: number }) {
+function PowerBadge({ level }: { level: number }) {
   return (
     <span className={`${styles.pill} ${CLASS_MAP[level] ?? ''}`} title={BRACKET_LABELS[level]}>
       {SHORT[level] ?? '?'}

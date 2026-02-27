@@ -23,8 +23,10 @@ export function usePersistence() {
 
   useEffect(() => {
     return useStore.subscribe(
-      (state) => {
-        saveState(state.players, state.nextPlayerId, state.groups, state.nextGroupId);
+      (state, prev) => {
+        if (state.players !== prev.players || state.groups !== prev.groups) {
+          saveState(state.players, state.nextPlayerId, state.groups, state.nextGroupId);
+        }
       },
     );
   }, []);
@@ -36,11 +38,13 @@ export function usePersistence() {
 
   const handleImport = useCallback(async (file: File) => {
     const data = await importFromFile(file);
-    useStore.setState({
-      players: data.players,
-      nextPlayerId: data.nextPlayerId,
-      groups: data.groups,
-      nextGroupId: data.nextGroupId,
+    suppressSync(() => {
+      useStore.setState({
+        players: data.players,
+        nextPlayerId: data.nextPlayerId,
+        groups: data.groups,
+        nextGroupId: data.nextGroupId,
+      });
     });
   }, []);
 

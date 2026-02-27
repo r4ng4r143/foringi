@@ -1,7 +1,16 @@
 name = "foringi"
+main = "src/server/worker.ts"
 compatibility_date = "2025-03-01"
-pages_build_output_dir = "dist"
 
-[[kv_namespaces]]
-binding = "SESSIONS"
-id = "b3714b6fc199435b9d706565fe634c7d"
+[assets]
+directory = "dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+[[durable_objects.bindings]]
+name = "SESSION"
+class_name = "SessionDO"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["SessionDO"]
